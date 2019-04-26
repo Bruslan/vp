@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 class FeedModel {
   final String userName;
   final List<String> imageUrl;
@@ -35,26 +34,40 @@ class _FeedFromModelState extends State<FeedFromModel> {
         children: <Widget>[
           widget.feedModel.imageUrl.length == 0
               ? SizedBox(height: 0)
-              : Container(
-                  height: 250,
-                  width: MediaQuery.of(context).size.width,
-                  child: PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: widget.feedModel.imageUrl.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return new CachedNetworkImage(
-                        placeholder: (context, url) => Container(
-                          height: 20,
-                              child: new CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.grey),
-                              ),
-                            ),
-                        imageUrl: widget.feedModel.imageUrl[index],
-                        fit: BoxFit.fitWidth,
-                      );
-                    },
-                  ),
+              : Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 250,
+                      width: MediaQuery.of(context).size.width,
+                      child: PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.feedModel.imageUrl.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return new CachedNetworkImage(
+                            placeholder: (context, url) => Container(
+                                  height: 20,
+                                  child: new CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            Colors.grey),
+                                  ),
+                                ),
+                            imageUrl: widget.feedModel.imageUrl[index],
+                            fit: BoxFit.fitWidth,
+                          );
+                        },
+                      ),
+                    ),
+                    Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: widget.feedModel.imageUrl.length == 1
+                            ? SizedBox()
+                            : Icon(
+                                Icons.perm_media,
+                                color: Colors.white,
+                              ))
+                  ],
                 )
         ],
       ),
@@ -70,6 +83,10 @@ class _FeedFromModelState extends State<FeedFromModel> {
       ),
       title: Text("Maraschka"),
       subtitle: Text("Unter Titel Maraschki"),
+      trailing: IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.more_horiz),
+      ),
     );
   }
 
