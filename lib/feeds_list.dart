@@ -10,7 +10,7 @@ class FeedsList extends StatefulWidget {
 
 class _FeedsListState extends State<FeedsList> {
   List<FeedModel> feedModelList = [
-    FeedModel(imageUrl: "http://lorempixel.com/400/200/")
+    FeedModel(imageUrl: "https://cdn.pixabay.com/photo/2017/10/25/16/54/african-lion-2888519_1280.jpg")
   ];
 
   @override

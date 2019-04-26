@@ -43,7 +43,7 @@ class _TabbarPageState extends State<TabbarPage> {
           case 1:
             return CupertinoTabView(
               builder: (BuildContext context) => Container(
-                    child: FeedPage(),
+                    child: Container(),
                   ),
             );
             break;
