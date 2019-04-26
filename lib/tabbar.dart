@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'feed_page.dart';
-
+import 'conversations_page.dart';
 class TabbarPage extends StatefulWidget {
   const TabbarPage({Key key}) : super(key: key);
 
@@ -43,7 +43,7 @@ class _TabbarPageState extends State<TabbarPage> {
           case 1:
             return CupertinoTabView(
               builder: (BuildContext context) => Container(
-                    child: Container(),
+                    child: Conversations(),
                   ),
             );
             break;

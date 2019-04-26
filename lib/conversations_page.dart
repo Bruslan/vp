@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class CreateFeedModal extends StatelessWidget {
-  const CreateFeedModal({Key key}) : super(key: key);
+
+class Conversations extends StatelessWidget {
+  const Conversations({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +11,7 @@ class CreateFeedModal extends StatelessWidget {
       appBar: CupertinoNavigationBar(
         middle: Text("create"),
       ),
-      body: Text("hallo"),
+      body: Container()
     );
   }
 }
