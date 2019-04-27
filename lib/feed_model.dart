@@ -4,14 +4,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class FeedModel {
   final String userName;
-  final List<String> imageUrl;
+  final List<String> imageUrls;
+  final String textContent;
 
-  FeedModel({this.userName, this.imageUrl});
+  FeedModel({this.userName, this.textContent, this.imageUrls});
 
   factory FeedModel.fromJson(Map<String, dynamic> json) {
     return FeedModel(
       userName: json['author'],
-      imageUrl: json['url'],
+      imageUrls: json['url'],
+      textContent: json['textContent'],
     );
   }
 }
@@ -32,7 +34,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
       child: new Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          widget.feedModel.imageUrl.length == 0
+          widget.feedModel.imageUrls.length == 0
               ? SizedBox(height: 0)
               : Stack(
                   children: <Widget>[
@@ -41,7 +43,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
                       width: MediaQuery.of(context).size.width,
                       child: PageView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: widget.feedModel.imageUrl.length,
+                        itemCount: widget.feedModel.imageUrls.length,
                         itemBuilder: (BuildContext context, int index) {
                           return new CachedNetworkImage(
                             placeholder: (context, url) => Container(
@@ -52,7 +54,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
                                             Colors.grey),
                                   ),
                                 ),
-                            imageUrl: widget.feedModel.imageUrl[index],
+                            imageUrl: widget.feedModel.imageUrls[index],
                             fit: BoxFit.fitWidth,
                           );
                         },
@@ -61,10 +63,10 @@ class _FeedFromModelState extends State<FeedFromModel> {
                     Positioned(
                         bottom: 10,
                         right: 10,
-                        child: widget.feedModel.imageUrl.length == 1
+                        child: widget.feedModel.imageUrls.length == 1
                             ? SizedBox()
                             : Icon(
-                                Icons.perm_media,
+                                Icons.filter,
                                 color: Colors.white,
                               ))
                   ],
@@ -76,18 +78,32 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   ListTile buildFeedHeader() {
     return new ListTile(
-      leading: new CircleAvatar(
+      leading: widget.feedModel.imageUrls.length != 0 ? CircleAvatar(
         backgroundImage:
-            CachedNetworkImageProvider(widget.feedModel.imageUrl[0]),
+            CachedNetworkImageProvider(widget.feedModel.imageUrls[0]),
         backgroundColor: Colors.grey,
-      ),
+      ) : new CircleAvatar(
+              backgroundImage: 
+              ExactAssetImage("images/anonym.png"),
+                 
+              backgroundColor: Colors.grey,
+            ),
       title: Text("Maraschka"),
-      subtitle: Text("Unter Titel Maraschki"),
+      subtitle: Text(
+        "Unter Titel Maraschki",
+        style: TextStyle(fontSize: 12),
+      ),
       trailing: IconButton(
         onPressed: () {},
         icon: Icon(Icons.more_horiz),
       ),
     );
+  }
+
+    Widget buildTextContent() {
+    return  Padding(
+      padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+      child: Text(widget.feedModel.textContent?? "", textAlign: TextAlign.start,));
   }
 
   ListTile buildFeedFooter() {
@@ -142,17 +158,17 @@ class _FeedFromModelState extends State<FeedFromModel> {
           ),
           //   Stack(
           //               children: <Widget>[
-          //       IconButton(
-          //         onPressed: () {
-          //           setState(() {
-          //             voted = -1;
-          //           });
-          //         },
-          //         icon: Icon(
-          //           CupertinoIcons.conversation_bubble,
-          //           size: 35,
-          //         ),
-          //       ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      voted = -1;
+                    });
+                  },
+                  icon: Icon(
+                    CupertinoIcons.conversation_bubble,
+                    size: 35,
+                  ),
+                ),
           //       Positioned(
           //  left: 15,
           //  top:20,
@@ -170,6 +186,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         buildFeedHeader(),
         buildLikeableImage(),
+        widget.feedModel.textContent !=null ? buildTextContent() : SizedBox(),
         buildFeedFooter()
       ]),
     );

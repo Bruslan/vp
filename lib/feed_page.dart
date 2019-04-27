@@ -2,8 +2,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'create_feed_modal.dart';
 import 'feeds_list.dart';
+import 'filter_pins.dart';
 
 class FeedPage extends StatelessWidget {
+
+    List<Map<String, dynamic>> tagsMap = [
+        {
+      "name": "Favos",
+      "value": false,
+    },
+    {
+      "name": "VayGirls",
+      "value": false,
+    },
+    {"name": "VayBoys", "value": false},
+    {"name": "VayMusic", "value": false},
+    {"name": "VayShop", "value": false},
+    {"name": "VayBöhum", "value": false},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +33,15 @@ class FeedPage extends StatelessWidget {
             },
             icon: Icon(CupertinoIcons.create),
           ),
-          middle: Text("clean it"),
+          middle: Text("Feed"),
         ),
-        body: FeedsList());
+        body: Column(
+          children: <Widget>[
+            TagPills(
+              tags: tagsMap,
+            ),
+            FeedsList(),
+          ],
+        ));
   }
 }
