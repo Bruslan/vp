@@ -7,12 +7,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:math' as Math;
 import 'package:image/image.dart' as Im;
-
 import 'location.dart';
-
 import 'filter_pins.dart';
-
-
 
 class CreateFeedModal extends StatefulWidget {
   final String currentUser;
@@ -35,7 +31,6 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   bool posting = false;
   bool anonym = false;
   List<Map<String, dynamic>> tagsMap = [
-
     {
       "name": "VayGirls",
       "value": false,
@@ -56,16 +51,15 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
-          backgroundColor: Colors.white70,
-          // leading: new IconButton(
-          //     icon: new Icon(Icons.arrow_back, color: Colors.black),
-          //     onPressed: clearImage),
-          middle: const Text(
-            'Post to',
-            style: const TextStyle(color: Colors.black),
-          ),
-          trailing: 
-            new FlatButton(
+            backgroundColor: Colors.white70,
+            // leading: new IconButton(
+            //     icon: new Icon(Icons.arrow_back, color: Colors.black),
+            //     onPressed: clearImage),
+            middle: const Text(
+              'Post to',
+              style: const TextStyle(color: Colors.black),
+            ),
+            trailing: new FlatButton(
                 onPressed: () {
                   if (posting == false) {
                     postImage();
@@ -77,9 +71,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                       color: Colors.blueAccent,
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0),
-                ))
-          
-        ),
+                ))),
         body: new ListView(
           children: <Widget>[
             new Row(
@@ -241,8 +233,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       });
       // compressImage();
       uploadImage(file).then((String data) {
-        postToFireStore(
- );
+        postToFireStore();
       }).catchError((onError) {
         print("ein Error beim Upload");
         print(onError);
@@ -259,8 +250,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     } else {
       if (descriptionController.text != "" && tagFilter != "") {
         posting = true;
-        postToFireStore(
-       );
+        postToFireStore();
 
         Navigator.pop(context);
       }
@@ -358,9 +348,6 @@ Future<String> uploadImage(var imageFile) async {
   // return downloadUrl;
 }
 
-void postToFireStore(
-    ) {
-
-}
+void postToFireStore() {}
 
 typedef PostFormCallback = void Function();
