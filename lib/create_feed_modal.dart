@@ -1,11 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -15,21 +11,6 @@ import 'package:image/image.dart' as Im;
 import 'location.dart';
 
 import 'filter_pins.dart';
-
-
-// class CreateFeedModal extends StatelessWidget {
-//   const CreateFeedModal({Key key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: CupertinoNavigationBar(
-//         middle: Text("create"),
-//       ),
-//       body: Text("hallo"),
-//     );
-//   }
-// }
 
 
 
@@ -76,9 +57,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
           backgroundColor: Colors.white70,
-          leading: new IconButton(
-              icon: new Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: clearImage),
+          // leading: new IconButton(
+          //     icon: new Icon(Icons.arrow_back, color: Colors.black),
+          //     onPressed: clearImage),
           middle: const Text(
             'Post to',
             style: const TextStyle(color: Colors.black),

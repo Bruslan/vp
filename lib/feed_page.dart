@@ -5,14 +5,13 @@ import 'feeds_list.dart';
 import 'filter_pins.dart';
 
 class FeedPage extends StatefulWidget {
-
   @override
   _FeedPageState createState() => _FeedPageState();
 }
 
 class _FeedPageState extends State<FeedPage> {
-    List<Map<String, dynamic>> tagsMap = [
-        {
+  List<Map<String, dynamic>> tagsMap = [
+    {
       "name": "Favos",
       "value": false,
     },
@@ -29,17 +28,19 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-                 appBar: CupertinoNavigationBar(
+        appBar: CupertinoNavigationBar(
           trailing: IconButton(
             onPressed: () {
               Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                builder: (context) => CreateFeedModal(),
+                builder: (context) => CreateFeedModal(
+                      currentUser: null,
+                    ),
               ));
             },
             icon: Icon(CupertinoIcons.create),
           ),
           middle: Text("Feed"),
-        ),    
+        ),
         body: Column(
           children: <Widget>[
             TagPills(

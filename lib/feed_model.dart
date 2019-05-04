@@ -78,14 +78,14 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   ListTile buildFeedHeader() {
     return new ListTile(
-      leading: widget.feedModel.imageUrls.length != 0 ? CircleAvatar(
-        backgroundImage:
-            CachedNetworkImageProvider(widget.feedModel.imageUrls[0]),
-        backgroundColor: Colors.grey,
-      ) : new CircleAvatar(
-              backgroundImage: 
-              ExactAssetImage("images/anonym.png"),
-                 
+      leading: widget.feedModel.imageUrls.length != 0
+          ? CircleAvatar(
+              backgroundImage:
+                  CachedNetworkImageProvider(widget.feedModel.imageUrls[0]),
+              backgroundColor: Colors.grey,
+            )
+          : new CircleAvatar(
+              backgroundImage: ExactAssetImage("images/anonym.png"),
               backgroundColor: Colors.grey,
             ),
       title: Text("Maraschka"),
@@ -100,10 +100,13 @@ class _FeedFromModelState extends State<FeedFromModel> {
     );
   }
 
-    Widget buildTextContent() {
-    return  Padding(
-      padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
-      child: Text(widget.feedModel.textContent?? "", textAlign: TextAlign.start,));
+  Widget buildTextContent() {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+        child: Text(
+          widget.feedModel.textContent ?? "",
+          textAlign: TextAlign.start,
+        ));
   }
 
   ListTile buildFeedFooter() {
@@ -158,17 +161,17 @@ class _FeedFromModelState extends State<FeedFromModel> {
           ),
           //   Stack(
           //               children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      voted = -1;
-                    });
-                  },
-                  icon: Icon(
-                    CupertinoIcons.conversation_bubble,
-                    size: 35,
-                  ),
-                ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                voted = -1;
+              });
+            },
+            icon: Icon(
+              CupertinoIcons.conversation_bubble,
+              size: 35,
+            ),
+          ),
           //       Positioned(
           //  left: 15,
           //  top:20,
@@ -186,7 +189,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         buildFeedHeader(),
         buildLikeableImage(),
-        widget.feedModel.textContent !=null ? buildTextContent() : SizedBox(),
+        widget.feedModel.textContent != null ? buildTextContent() : SizedBox(),
         buildFeedFooter()
       ]),
     );
