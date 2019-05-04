@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'chat_bubble.dart';
 import 'dart:math';
+import 'package:flutter_slidable/flutter_slidable.dart';
 // final analytics = new FirebaseAnalytics();
 
 var currentUserEmail;
@@ -45,7 +46,6 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: CupertinoNavigationBar(
-
           middle: Text("Chat mit Kakaschki"),
         ),
         body: new Container(
@@ -69,12 +69,30 @@ class ChatPageState extends State<ChatPage> {
                       Random random = new Random();
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
-                                              child: Bubble(
-                          message: "hallo das ist ein Beispiel Chat tesxt",
-                          time: "12:02",
-                          isMe: random.nextBool(),
-                          delivered: true,
-                        
+                        child: Slidable(
+                          delegate: new SlidableDrawerDelegate(),
+                          actionExtentRatio: 0.25,
+                          child: GestureDetector(
+                
+                            child: Bubble(
+                              message: "hallo das ist ein Beispiel Chat tesxt",
+                              time: "12:02",
+                              isMe: random.nextBool(),
+                              delivered: true,
+                            ),
+                          ),
+                          secondaryActions: <Widget>[
+                            new IconSlideAction(
+                                caption: 'More',
+                                color: Colors.black45,
+                                icon: Icons.more_horiz,
+                                onTap: () => {}),
+                            new IconSlideAction(
+                                caption: 'Delete',
+                                color: Colors.red,
+                                icon: Icons.delete,
+                                onTap: () => {}),
+                          ],
                         ),
                       );
                     }),

@@ -71,8 +71,8 @@ class ProfilePage extends StatelessWidget {
                           children: <Widget>[
                             CircleAvatar(
                               backgroundColor: Colors.transparent,
-                              backgroundImage:
-                                  new CachedNetworkImageProvider('http://i.pravatar.cc/40'),
+                              backgroundImage: new CachedNetworkImageProvider(
+                                  'http://i.pravatar.cc/40'),
                             ),
                             SizedBox(width: 15.0),
                             Text('I am the card content!!')

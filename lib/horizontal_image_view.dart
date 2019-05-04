@@ -27,8 +27,6 @@ class HorizontalImageViewList extends StatelessWidget {
               new SimpleDialogOption(
                   child: const Text('Delete?'),
                   onPressed: () {
-                    print(index);
-                  
                     onPhotoTapped(index);
                     Navigator.pop(context);
                   }),
@@ -52,7 +50,6 @@ class HorizontalImageViewList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           itemCount: imageFileList.length,
           itemBuilder: (context, int index) {
-            print(index);
             return new Container(
               margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
               height: 50.0,
