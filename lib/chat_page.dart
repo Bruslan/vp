@@ -1,118 +1,176 @@
+import 'dart:async';
+// import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'chat_bubble.dart';
+import 'dart:math';
+// final analytics = new FirebaseAnalytics();
 
+var currentUserEmail;
+var _scaffoldContext;
 
-class Bubble extends StatelessWidget {
-  Bubble({this.message, this.time, this.delivered, this.isMe});
+class ChatPage extends StatefulWidget {
+  final String currentUser;
+  final String conversationId;
+  final String receiverID;
+  final String receiverUserName;
 
-  final String message, time;
-  final delivered, isMe;
-
+  const ChatPage(
+      {Key key,
+      this.currentUser,
+      this.conversationId,
+      this.receiverID,
+      this.receiverUserName})
+      : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    final bg = isMe ? Colors.white : Colors.greenAccent.shade100;
-    final align = isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end;
-    final icon = delivered ? Icons.done_all : Icons.done;
-    final radius = isMe
-        ? BorderRadius.only(
-            topRight: Radius.circular(5.0),
-            bottomLeft: Radius.circular(10.0),
-            bottomRight: Radius.circular(5.0),
-          )
-        : BorderRadius.only(
-            topLeft: Radius.circular(5.0),
-            bottomLeft: Radius.circular(5.0),
-            bottomRight: Radius.circular(10.0),
-          );
-    return Column(
-      crossAxisAlignment: align,
-      children: <Widget>[
-        Container(
-          margin: const EdgeInsets.all(3.0),
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                  blurRadius: .5,
-                  spreadRadius: 1.0,
-                  color: Colors.black.withOpacity(.12))
-            ],
-            color: bg,
-            borderRadius: radius,
-          ),
-          child: Stack(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(right: 48.0),
-                child: Text(message),
-              ),
-              Positioned(
-                bottom: 0.0,
-                right: 0.0,
-                child: Row(
-                  children: <Widget>[
-                    Text(time,
-                        style: TextStyle(
-                          color: Colors.black38,
-                          fontSize: 10.0,
-                        )),
-                    SizedBox(width: 3.0),
-                    Icon(
-                      icon,
-                      size: 12.0,
-                      color: Colors.black38,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        )
-      ],
-    );
+  ChatPageState createState() {
+    return new ChatPageState();
   }
 }
 
-class ChatPage extends StatelessWidget {
+class ChatPageState extends State<ChatPage> {
+  final TextEditingController _textEditingController =
+      new TextEditingController();
+  bool _isComposingMessage = false;
+
+  String groupChatId;
+  final ScrollController listScrollController = new ScrollController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blueGrey.shade50,
-      appBar: CupertinoNavigationBar(
-        middle: Text("Bruslan"),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Bubble(
-              message: 'Hi there, this is a message',
-              time: '12:00',
-              delivered: true,
-              isMe: false,
-            ),
-            Bubble(
-              message: 'Whatsapp like bubble talk',
-              time: '12:01',
-              delivered: true,
-              isMe: false,
-            ),
-            Bubble(
-              message: 'Nice one, Flutter is awesome',
-              time: '12:00',
-              delivered: true,
-              isMe: true,
-            ),
-            Bubble(
-              message: 'I\'ve told you so dude!',
-              time: '12:00',
-              delivered: true,
-              isMe: false,
-            ),
-          ],
+    return new Scaffold(
+        appBar: CupertinoNavigationBar(
+
+          middle: Text("Chat mit Kakaschki"),
         ),
-      ),
+        body: new Container(
+          child: new Column(
+            children: <Widget>[
+              new Flexible(
+                // child: StreamBuilder(
+                //   stream: Firestore.instance
+                //       .collection("messages")
+                //       .document(groupChatId)
+                //       .collection("messages")
+                //       .orderBy('timestamp', descending: true)
+                //       .limit(20)
+                //       .snapshots(),
+
+                child: new ListView.builder(
+                    reverse: true,
+                    controller: listScrollController,
+                    itemCount: 20,
+                    itemBuilder: (context, index) {
+                      Random random = new Random();
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                              child: Bubble(
+                          message: "hallo das ist ein Beispiel Chat tesxt",
+                          time: "12:02",
+                          isMe: random.nextBool(),
+                          delivered: true,
+                        
+                        ),
+                      );
+                    }),
+              ),
+              new Divider(height: 1.0),
+              new Container(
+                decoration:
+                    new BoxDecoration(color: Theme.of(context).cardColor),
+                child: _buildTextComposer(),
+              ),
+              new Builder(builder: (BuildContext context) {
+                _scaffoldContext = context;
+                return new Container(width: 0.0, height: 0.0);
+              })
+            ],
+          ),
+          decoration: Theme.of(context).platform == TargetPlatform.iOS
+              ? new BoxDecoration(
+                  border: new Border(
+                      top: new BorderSide(
+                  color: Colors.grey[200],
+                )))
+              : null,
+        ));
+  }
+
+  CupertinoButton getIOSSendButton() {
+    return new CupertinoButton(
+      child: new Text("Send"),
+      onPressed: _isComposingMessage
+          ? () => _textMessageSubmitted(_textEditingController.text)
+          : null,
     );
   }
+
+  IconButton getDefaultSendButton() {
+    return new IconButton(
+      icon: new Icon(Icons.send),
+      onPressed: _isComposingMessage
+          ? () => _textMessageSubmitted(_textEditingController.text)
+          : null,
+    );
+  }
+
+  Widget _buildTextComposer() {
+    return new IconTheme(
+        data: new IconThemeData(
+          color: _isComposingMessage
+              ? Theme.of(context).accentColor
+              : Theme.of(context).disabledColor,
+        ),
+        child: new Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: new Row(
+            children: <Widget>[
+              new Container(
+                margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                child: new IconButton(
+                    icon: new Icon(
+                      Icons.photo_camera,
+                      color: Theme.of(context).accentColor,
+                    ),
+                    onPressed: () async {}),
+              ),
+              new Flexible(
+                child: new TextField(
+                  controller: _textEditingController,
+                  onChanged: (String messageText) {
+                    setState(() {
+                      _isComposingMessage = messageText.length > 0;
+                    });
+                  },
+                  onSubmitted: _textMessageSubmitted,
+                  decoration:
+                      new InputDecoration.collapsed(hintText: "Send a message"),
+                ),
+              ),
+              new Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Theme.of(context).platform == TargetPlatform.iOS
+                    ? getIOSSendButton()
+                    : getDefaultSendButton(),
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Future<Null> _textMessageSubmitted(String text) async {
+    _textEditingController.clear();
+
+    setState(() {
+      _isComposingMessage = false;
+    });
+    _sendMessage(messageText: text, imageUrl: null);
+  }
+
+  void _sendMessage({String messageText, String imageUrl}) {}
 }

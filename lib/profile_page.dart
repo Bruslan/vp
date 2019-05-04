@@ -79,13 +79,13 @@ class ProfilePage extends StatelessWidget {
                             Text('I am the card content!!')
                           ],
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.favorite_border,
-                            size: 15,
-                          ),
-                        )
+                        // IconButton(
+                        //   onPressed: () {},
+                        //   icon: Icon(
+                        //     Icons.favorite_border,
+                        //     size: 15,
+                        //   ),
+                        // )
                       ],
                     ),
                   )),

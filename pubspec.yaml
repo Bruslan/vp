@@ -26,7 +26,11 @@ dependencies:
   http: 
   cached_network_image:
   flutter_slidable:
-
+  image_picker:
+  location: 2.3.4
+  geocoder:
+  image:
+  flutter_image_compress: ^0.4.0
 
 dev_dependencies:
   flutter_test:
