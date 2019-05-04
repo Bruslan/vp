@@ -1,7 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key key}) : super(key: key);
@@ -21,7 +20,7 @@ class ProfilePage extends StatelessWidget {
                 Container(
                     width: MediaQuery.of(context).size.width,
                     child: Image.network(
-                      'http://i.pravatar.cc/800',
+                      'http://i.pravatar.cc/300',
                       fit: BoxFit.fitWidth,
                     )),
                 Positioned(
@@ -73,19 +72,12 @@ class ProfilePage extends StatelessWidget {
                             CircleAvatar(
                               backgroundColor: Colors.transparent,
                               backgroundImage:
-                                  new NetworkImage('http://i.pravatar.cc/50'),
+                                  new CachedNetworkImageProvider('http://i.pravatar.cc/40'),
                             ),
                             SizedBox(width: 15.0),
                             Text('I am the card content!!')
                           ],
                         ),
-                        // IconButton(
-                        //   onPressed: () {},
-                        //   icon: Icon(
-                        //     Icons.favorite_border,
-                        //     size: 15,
-                        //   ),
-                        // )
                       ],
                     ),
                   )),

@@ -9,6 +9,7 @@ import 'dart:math' as Math;
 import 'package:image/image.dart' as Im;
 import 'location.dart';
 import 'filter_pins.dart';
+import 'horizontal_image_view.dart';
 
 class CreateFeedModal extends StatefulWidget {
   final String currentUser;
@@ -20,6 +21,7 @@ class CreateFeedModal extends StatefulWidget {
 
 class _CreateFeedModal extends State<CreateFeedModal> {
   File file;
+  List<File> imageFiles = [];
   //Strings required to save address
 
   Map<String, double> currentLocation = new Map();
@@ -52,9 +54,6 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
             backgroundColor: Colors.white70,
-            // leading: new IconButton(
-            //     icon: new Icon(Icons.arrow_back, color: Colors.black),
-            //     onPressed: clearImage),
             middle: const Text(
               'Post to',
               style: const TextStyle(color: Colors.black),
@@ -90,11 +89,24 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                 )
               ],
             ),
+
+            HorizontalImageViewList(
+              imageFileList: imageFiles,
+              onPhotoTapped: (index){
+                setState(() {
+                   imageFiles.removeAt(index);
+                });
+               
+              },
+             
+            ),
+
             new PostForm(
               onImagePressed: () {
                 _selectImage();
+                
               },
-              imageFile: file,
+              imageFiles: imageFiles,
               descriptionController: descriptionController,
               locationController: locationController,
               loading: uploading,
@@ -169,11 +181,11 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                   Navigator.of(context).pop();
                   File imageFile = await ImagePicker.pickImage(
                       source: ImageSource.gallery,
-                      maxHeight: 400,
-                      maxWidth: 400);
+                      maxHeight: 500,
+                      maxWidth: 500);
 
                   setState(() {
-                    file = imageFile;
+                    imageFiles.add(imageFile);
                   });
                 }),
             new SimpleDialogOption(
@@ -260,14 +272,14 @@ class _CreateFeedModal extends State<CreateFeedModal> {
 
 class PostForm extends StatelessWidget {
   final PostFormCallback onImagePressed;
-  final imageFile;
+  final imageFiles;
   final TextEditingController descriptionController;
   final TextEditingController locationController;
   final bool loading;
 
   PostForm(
       {this.onImagePressed,
-      this.imageFile,
+      this.imageFiles,
       this.descriptionController,
       this.loading,
       this.locationController});
@@ -291,28 +303,7 @@ class PostForm extends StatelessWidget {
                     hintText: "Write a caption...", border: InputBorder.none),
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                onImagePressed();
-              },
-              child: new Container(
-                height: 45.0,
-                width: 45.0,
-                child: new AspectRatio(
-                  aspectRatio: 487 / 451,
-                  child: new Container(
-                    decoration: new BoxDecoration(
-                        image: new DecorationImage(
-                      fit: BoxFit.fill,
-                      alignment: FractionalOffset.topCenter,
-                      image: imageFile == null
-                          ? ExactAssetImage("images/placeholder.png")
-                          : new FileImage(imageFile),
-                    )),
-                  ),
-                ),
-              ),
-            ),
+            IconButton(onPressed: onImagePressed, icon: Icon(Icons.add_a_photo))
           ],
         ),
         new Divider(),
