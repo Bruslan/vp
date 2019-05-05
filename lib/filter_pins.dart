@@ -31,6 +31,9 @@ class _TagPillsState extends State<TagPills> {
     super.initState();
     
   }
+
+ 
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,9 +75,9 @@ class TagIndicator extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: selected ? Colors.lightGreen : Colors.white,
+            color: selected ? Colors.grey : Colors.grey.shade100,
             border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.all(Radius.circular(10))),
+            borderRadius: BorderRadius.all(Radius.circular(20))),
         child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Text(
