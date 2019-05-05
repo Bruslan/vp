@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'feed_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
+import 'user_model.dart';
 
 final Firestore _firestore = Firestore.instance;
 
@@ -40,8 +41,17 @@ Future<void> uploadFeed(FeedModel feed) async {
   });
 }
 
+
+Future<void> createUser(User user) async {
+  DocumentReference reference = _firestore.collection("users").document();
+
+  reference.setData(user.toJson()).catchError((error) {
+    print("error beim erstellen des User");
+  });
+}
+
 Future<List<FeedModel>> getFeeds(int feedCount, String collection,
-  List<Map<String, dynamic>> tagNames) async {
+    List<Map<String, dynamic>> tagNames) async {
   List<FeedModel> feeds = new List();
   String tagFilter = "";
 
@@ -79,4 +89,20 @@ Future<List<FeedModel>> getFeeds(int feedCount, String collection,
     });
   }
   return feeds;
+}
+
+Future<User> getUserProfile(String userId) async {
+  User user;
+  await _firestore
+      .collection("users")
+      // .startAt([startAtDocument])
+      .document(userId)
+      .get()
+      .then((snapShot) {
+    user = User.fromDocument(snapShot);
+  }).catchError((error) {
+    print("Error beim User fetch");
+    print(error);
+  });
+  return user;
 }

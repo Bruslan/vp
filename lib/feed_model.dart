@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:vp/user_model.dart';
+import 'database_logic.dart';
 
 class FeedModel {
   final String userName;
@@ -113,16 +115,28 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   ListTile buildFeedHeader() {
     return new ListTile(
-      leading: widget.feedModel.imageUrls.length != 0
-          ? CircleAvatar(
-              backgroundImage:
-                  CachedNetworkImageProvider(widget.feedModel.imageUrls[0]),
-              backgroundColor: Colors.grey,
-            )
-          : new CircleAvatar(
+      leading: new FutureBuilder(
+        future: getUserProfile(widget.feedModel.userId),
+        builder: (BuildContext context, AsyncSnapshot<User> user) {
+          if (user.data != null) {
+            user.data.profileImageUrl != ""
+                ? CircleAvatar(
+                    backgroundImage:
+                        CachedNetworkImageProvider(user.data.profileImageUrl),
+                    backgroundColor: Colors.grey,
+                  )
+                : new CircleAvatar(
+                    backgroundImage: ExactAssetImage("images/anonym.png"),
+                    backgroundColor: Colors.grey,
+                  );
+          } else {
+            return new CircleAvatar(
               backgroundImage: ExactAssetImage("images/anonym.png"),
               backgroundColor: Colors.grey,
-            ),
+            );
+          }
+        },
+      ),
       title: Text(widget.feedModel.userName),
       subtitle: Text(
         "Unter Titel Maraschki",
@@ -216,6 +230,18 @@ class _FeedFromModelState extends State<FeedFromModel> {
         ],
       ),
     );
+  }
+
+  User feedUser;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  getUser() async {
+    User user = await getUserProfile(widget.feedModel.userId);
+    feedUser = user;
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'auth_class.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key key}) : super(key: key);
@@ -23,6 +24,12 @@ class ProfilePage extends StatelessWidget {
                       'http://i.pravatar.cc/300',
                       fit: BoxFit.fitWidth,
                     )),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                      onPressed: _signOut, icon: Icon(Icons.time_to_leave)),
+                ),
                 Positioned(
                   bottom: 10,
                   left: 10,
@@ -85,5 +92,13 @@ class ProfilePage extends StatelessWidget {
         )
       ],
     ));
+  }
+
+  _signOut() async {
+    try {
+      await Auth().signOut();
+    } catch (e) {
+      print(e);
+    }
   }
 }

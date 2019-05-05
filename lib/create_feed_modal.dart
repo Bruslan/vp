@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:vp/user_model.dart';
 import 'dart:async';
 import 'dart:io';
 import 'feed_model.dart';
@@ -9,8 +11,8 @@ import 'location.dart';
 import 'filter_pins.dart';
 import 'horizontal_image_view.dart';
 import 'database_logic.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'auth_class.dart';
 
 class CreateFeedModal extends StatefulWidget {
   final String currentUser;
@@ -76,9 +78,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
           },
-        onVerticalDragCancel: (){
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
+          onVerticalDragCancel: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
           child: new ListView(
             children: <Widget>[
               new Row(
@@ -163,9 +165,12 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   void postToFireStore(List<String> imageUrls, String tag) async {
 // FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
+    FirebaseUser currentUserFirebase = await Auth().getCurrentUser();
+    User currentUser = await getUserProfile(currentUserFirebase.uid);
+
     FeedModel feed = new FeedModel(
-      userName: "Ruslan",
-      userId: "12345",
+      userName: currentUser.userName,
+      userId: currentUserFirebase.uid,
       imageUrls: imageUrls,
       textContent: descriptionController.text,
       tag: tag,
