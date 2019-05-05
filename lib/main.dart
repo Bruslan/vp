@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'root_page.dart';
 
-import 'tabbar.dart';
+import 'auth_class.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: TabbarPage(),
+      home: RootPage(auth: new Auth()),
     );
   }
 }

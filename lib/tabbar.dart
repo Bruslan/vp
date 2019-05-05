@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vp/auth_class.dart';
 import 'feed_page.dart';
 import 'conversations_page.dart';
 import 'profile_page.dart';
 
 
 class TabbarPage extends StatefulWidget {
-  const TabbarPage({Key key}) : super(key: key);
+  const TabbarPage({Key key, String userId, BaseAuth auth, onSignedOut}) : super(key: key);
 
   @override
   _TabbarPageState createState() => _TabbarPageState();
