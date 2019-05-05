@@ -7,8 +7,6 @@ import 'package:uuid/uuid.dart';
 
 final Firestore _firestore = Firestore.instance;
 
-
-
 Future<String> uploadImage(File imageFile) async {
   var uuid = new Uuid().v1();
   StorageReference ref = FirebaseStorage.instance.ref().child("post_$uuid.jpg");
@@ -19,28 +17,66 @@ Future<String> uploadImage(File imageFile) async {
 }
 
 Future<List<String>> uploadImages(List<File> imageFiles) async {
-
-  List<String> downloadURLs =[];
+  List<String> downloadURLs = [];
   for (File file in imageFiles) {
+    var uuid = new Uuid().v1();
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child("post_$uuid.jpg");
+    StorageUploadTask uploadTask = ref.putFile(file);
 
-  var uuid = new Uuid().v1();
-  StorageReference ref = FirebaseStorage.instance.ref().child("post_$uuid.jpg");
-  StorageUploadTask uploadTask = ref.putFile(file);
-
-  String downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
-  downloadURLs.add(downloadUrl);
-
+    String downloadUrl =
+        await (await uploadTask.onComplete).ref.getDownloadURL();
+    downloadURLs.add(downloadUrl);
   }
 
   return downloadURLs;
 }
 
 Future<void> uploadFeed(FeedModel feed) async {
+  DocumentReference reference = _firestore.collection("feeds").document();
 
-DocumentReference reference = _firestore.collection("feeds").document();
-
-reference.setData(feed.toJson()).catchError((error){
-print("error beim uploaden des Feeds");
-});
+  reference.setData(feed.toJson()).catchError((error) {
+    print("error beim uploaden des Feeds");
+  });
 }
 
+Future<List<FeedModel>> getFeeds(int feedCount, String collection,
+  List<Map<String, dynamic>> tagNames) async {
+  List<FeedModel> feeds = new List();
+  String tagFilter = "";
+
+  tagNames.forEach((f) {
+    if (f["value"] == true) {
+      tagFilter = f["name"];
+      return;
+    }
+  });
+
+  if (tagFilter == "") {
+    await _firestore
+        .collection(collection)
+        .orderBy('timestamp', descending: true)
+        .limit(feedCount)
+        // .startAt([startAtDocument])
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((document) {
+        feeds.add(FeedModel.fromDocument(document));
+      });
+    });
+  } else {
+    await _firestore
+        .collection(collection)
+        .orderBy('timestamp', descending: true)
+        .where("tag", isEqualTo: tagFilter)
+        .limit(feedCount)
+        // .startAt([startAtDocument])
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((document) {
+        feeds.add(FeedModel.fromDocument(document));
+      });
+    });
+  }
+  return feeds;
+}

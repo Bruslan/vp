@@ -165,6 +165,7 @@ userId: "12345",
 imageUrls: imageUrls,
 textContent: descriptionController.text,
 tag: tag, 
+timestamp: new DateTime.now().toString(),
 );
 
 uploadFeed(feed);

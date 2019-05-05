@@ -46,7 +46,7 @@ class _FeedPageState extends State<FeedPage> {
             TagPills(
               tags: tagsMap,
             ),
-            FeedsList(),
+            FeedsList(tagsMap: tagsMap,),
           ],
         ));
   }

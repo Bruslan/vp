@@ -1,40 +1,54 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class FeedModel {
   final String userName;
-  final List<String> imageUrls;
+  final List<dynamic> imageUrls;
   final String textContent;
   final String userId;
   final String tag;
   final String location;
   final String postId;
+  final String timestamp;
 
-  FeedModel({this.userName, this.textContent, this.imageUrls, this.userId, this.postId, this.location, this.tag});
+  FeedModel(
+      {this.userName,
+      this.textContent,
+      this.imageUrls,
+      this.userId,
+      this.postId,
+      this.location,
+      this.tag,
+      this.timestamp});
 
   factory FeedModel.fromJson(Map<String, dynamic> json) {
     return FeedModel(
-      postId: json["postId"],
-      location: json["location"],
-      tag: json["tag"],
-      userName: json['author'],
-      imageUrls: json['url'],
-      textContent: json['textContent'],
-      userId: json['userId']
-    );
+        postId: json["postId"],
+        location: json["location"],
+        tag: json["tag"],
+        userName: json['userName'],
+        imageUrls: json['imageUrls'] == null ? [] : json['imageUrls'],
+        textContent: json['textContent'],
+        userId: json['userId'],
+        timestamp: json["timestamp"]);
   }
 
-    Map<String, Object> toJson() {
+  factory FeedModel.fromDocument(DocumentSnapshot doc) {
+    return FeedModel.fromJson(doc.data);
+  }
+
+  Map<String, Object> toJson() {
     return {
-      'userName':userName,
+      'userName': userName,
       'imageUrls': imageUrls,
       'textContent': textContent,
-      "userId":userId,
-      "tag":tag,
+      "userId": userId,
+      "tag": tag,
       "location": location,
-      "postId":postId
-
+      "postId": postId,
+      "timestamp": timestamp
     };
   }
 }
@@ -109,7 +123,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
               backgroundImage: ExactAssetImage("images/anonym.png"),
               backgroundColor: Colors.grey,
             ),
-      title: Text("Maraschka"),
+      title: Text(widget.feedModel.userName),
       subtitle: Text(
         "Unter Titel Maraschki",
         style: TextStyle(fontSize: 12),
