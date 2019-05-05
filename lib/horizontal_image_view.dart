@@ -63,7 +63,7 @@ class HorizontalImageViewList extends StatelessWidget {
                   child: new Container(
                     decoration: new BoxDecoration(
                         image: new DecorationImage(
-                      fit: BoxFit.fill,
+                      fit: BoxFit.fitHeight,
                       alignment: FractionalOffset.topCenter,
                       image: new FileImage(imageFileList[index]),
                     )),

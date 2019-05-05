@@ -30,16 +30,20 @@ class _FeedsListState extends State<FeedsList> {
   Widget build(BuildContext context) {
     return Expanded(
       child: RefreshIndicator(
-        child: ListView.builder(
-          itemCount: feedModelList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return FeedFromModel(
-              feedModel: feedModelList[index],
-            );
-          },
-        ),
-        onRefresh: () {},
-      ),
+          child: ListView.builder(
+            itemCount: feedModelList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return FeedFromModel(
+                feedModel: feedModelList[index],
+              );
+            },
+          ),
+          onRefresh: _refresh),
     );
+  }
+
+  Future<void> _refresh() async {
+    feedModelList.clear();
+    await _collectFeeds();
   }
 }

@@ -9,7 +9,8 @@ import 'location.dart';
 import 'filter_pins.dart';
 import 'horizontal_image_view.dart';
 import 'database_logic.dart';
-import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class CreateFeedModal extends StatefulWidget {
   final String currentUser;
@@ -71,55 +72,60 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0),
                 ))),
-        body: new ListView(
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      anonym = !anonym;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.security,
-                    color: anonym ? Colors.blue : Colors.grey,
-                  ),
-                )
-              ],
-            ),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+        onVerticalDragCancel: (){
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+          child: new ListView(
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        anonym = !anonym;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.security,
+                      color: anonym ? Colors.blue : Colors.grey,
+                    ),
+                  )
+                ],
+              ),
 
-            HorizontalImageViewList(
-              imageFileList: imageFiles,
-              onPhotoTapped: (index){
-                setState(() {
-                   imageFiles.removeAt(index);
-                });
-               
-              },
-             
-            ),
+              HorizontalImageViewList(
+                imageFileList: imageFiles,
+                onPhotoTapped: (index) {
+                  setState(() {
+                    imageFiles.removeAt(index);
+                  });
+                },
+              ),
 
-            new PostForm(
-              onImagePressed: () {
-                _selectImage();
-                
-              },
-              imageFiles: imageFiles,
-              descriptionController: descriptionController,
-              locationController: locationController,
-              loading: uploading,
-            ),
-            new Divider(),
-            //  Hier komm ein TagPill rein
-            TagPills(
-              tags: tagsMap,
-              onTagsSet: (tags) {
-                tagsMap = tags;
-              },
-            ),
-          ],
+              new PostForm(
+                onImagePressed: () {
+                  _selectImage();
+                },
+                imageFiles: imageFiles,
+                descriptionController: descriptionController,
+                locationController: locationController,
+                loading: uploading,
+              ),
+              new Divider(),
+              //  Hier komm ein TagPill rein
+              TagPills(
+                tags: tagsMap,
+                onTagsSet: (tags) {
+                  tagsMap = tags;
+                },
+              ),
+            ],
+          ),
         ));
   }
 
@@ -154,23 +160,33 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     }
   }
 
-
-void postToFireStore(List<String> imageUrls, String tag) async{
-
+  void postToFireStore(List<String> imageUrls, String tag) async {
 // FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-FeedModel feed = new FeedModel(
-userName: "Ruslan",
-userId: "12345",
-imageUrls: imageUrls,
-textContent: descriptionController.text,
-tag: tag, 
-timestamp: new DateTime.now().toString(),
-);
+    FeedModel feed = new FeedModel(
+      userName: "Ruslan",
+      userId: "12345",
+      imageUrls: imageUrls,
+      textContent: descriptionController.text,
+      tag: tag,
+      timestamp: new DateTime.now().toString(),
+    );
 
-uploadFeed(feed);
+    uploadFeed(feed);
+  }
 
-}
+  Future<Null> _cropImage(File imageFile) async {
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: imageFile.path,
+      ratioX: 1.0,
+      ratioY: 1.0,
+      maxWidth: 400,
+      maxHeight: 400,
+    );
+    setState(() {
+      imageFiles.add(croppedFile);
+    });
+  }
 
   _selectImage() async {
     return showDialog<Null>(
@@ -189,9 +205,7 @@ uploadFeed(feed);
                       source: ImageSource.camera,
                       maxHeight: 400,
                       maxWidth: 400);
-                  setState(() {
-                    file = imageFile;
-                  });
+                  _cropImage(imageFile);
                 }),
             new SimpleDialogOption(
                 child: const Text('Choose from Gallery'),
@@ -199,12 +213,10 @@ uploadFeed(feed);
                   Navigator.of(context).pop();
                   File imageFile = await ImagePicker.pickImage(
                       source: ImageSource.gallery,
-                      maxHeight: 500,
-                      maxWidth: 500);
+                      maxHeight: 400,
+                      maxWidth: 400);
 
-                  setState(() {
-                    imageFiles.add(imageFile);
-                  });
+                  _cropImage(imageFile);
                 }),
             new SimpleDialogOption(
               child: const Text("Cancel"),
@@ -217,8 +229,6 @@ uploadFeed(feed);
       },
     );
   }
-
-
 
   void clearImage() {
     setState(() {
@@ -244,9 +254,7 @@ uploadFeed(feed);
       });
       // compressImage();
 
-      
       uploadImages(imageFiles).then((List<String> imageURLs) {
-
         postToFireStore(imageURLs, tagFilter);
       }).catchError((onError) {
         print("ein Error beim Upload vom Feed");
@@ -269,7 +277,6 @@ uploadFeed(feed);
       }
     }
   }
-  
 }
 
 class PostForm extends StatelessWidget {
@@ -331,6 +338,5 @@ class PostForm extends StatelessWidget {
     );
   }
 }
-
 
 typedef PostFormCallback = void Function();

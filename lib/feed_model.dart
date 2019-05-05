@@ -74,7 +74,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
               : Stack(
                   children: <Widget>[
                     Container(
-                      height: 250,
+                      height: 350,
                       width: MediaQuery.of(context).size.width,
                       child: PageView.builder(
                         scrollDirection: Axis.horizontal,
