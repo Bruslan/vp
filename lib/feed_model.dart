@@ -129,12 +129,11 @@ class _FeedFromModelState extends State<FeedFromModel> {
                     backgroundImage: ExactAssetImage("images/anonym.png"),
                     backgroundColor: Colors.grey,
                   );
-          } else {
-            return new CircleAvatar(
-              backgroundImage: ExactAssetImage("images/anonym.png"),
-              backgroundColor: Colors.grey,
-            );
           }
+          return new CircleAvatar(
+            backgroundImage: ExactAssetImage("images/anonym.png"),
+            backgroundColor: Colors.grey,
+          );
         },
       ),
       title: Text(widget.feedModel.userName),
