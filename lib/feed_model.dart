@@ -6,15 +6,36 @@ class FeedModel {
   final String userName;
   final List<String> imageUrls;
   final String textContent;
+  final String userId;
+  final String tag;
+  final String location;
+  final String postId;
 
-  FeedModel({this.userName, this.textContent, this.imageUrls});
+  FeedModel({this.userName, this.textContent, this.imageUrls, this.userId, this.postId, this.location, this.tag});
 
   factory FeedModel.fromJson(Map<String, dynamic> json) {
     return FeedModel(
+      postId: json["postId"],
+      location: json["location"],
+      tag: json["tag"],
       userName: json['author'],
       imageUrls: json['url'],
       textContent: json['textContent'],
+      userId: json['userId']
     );
+  }
+
+    Map<String, Object> toJson() {
+    return {
+      'userName':userName,
+      'imageUrls': imageUrls,
+      'textContent': textContent,
+      "userId":userId,
+      "tag":tag,
+      "location": location,
+      "postId":postId
+
+    };
   }
 }
 

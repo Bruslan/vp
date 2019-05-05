@@ -4,12 +4,12 @@ import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'dart:math' as Math;
-import 'package:image/image.dart' as Im;
+import 'feed_model.dart';
 import 'location.dart';
 import 'filter_pins.dart';
 import 'horizontal_image_view.dart';
+import 'database_logic.dart';
+import 'package:firebase_auth/firebase_auth.dart'; 
 
 class CreateFeedModal extends StatefulWidget {
   final String currentUser;
@@ -154,6 +154,23 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     }
   }
 
+
+void postToFireStore(List<String> imageUrls, String tag) async{
+
+// FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+FeedModel feed = new FeedModel(
+userName: "Ruslan",
+userId: "12345",
+imageUrls: imageUrls,
+textContent: descriptionController.text,
+tag: tag, 
+);
+
+uploadFeed(feed);
+
+}
+
   _selectImage() async {
     return showDialog<Null>(
       context: context,
@@ -200,26 +217,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     );
   }
 
-  void compressImage() async {
-    print('starting compression');
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
-    int rand = new Math.Random().nextInt(10000);
 
-    Im.Image image = Im.decodeImage(file.readAsBytesSync());
-    Im.copyResize(image, 500);
-
-//    image.format = Im.Image.RGBA;
-//    Im.Image newim = Im.remapColors(image, alpha: Im.LUMINANCE);
-
-    var newim2 = new File('$path/img_$rand.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(image, quality: 20));
-
-    setState(() {
-      file = newim2;
-    });
-    print('done');
-  }
 
   void clearImage() {
     setState(() {
@@ -238,36 +236,39 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       }
     });
 
-    if (file != null && tagFilter != "") {
+    if (imageFiles.length != 0 && tagFilter != "") {
       posting = true;
       setState(() {
         uploading = true;
       });
       // compressImage();
-      uploadImage(file).then((String data) {
-        postToFireStore();
+
+      
+      uploadImages(imageFiles).then((List<String> imageURLs) {
+
+        postToFireStore(imageURLs, tagFilter);
       }).catchError((onError) {
-        print("ein Error beim Upload");
+        print("ein Error beim Upload vom Feed");
         print(onError);
       }).then((_) {
         setState(() {
-          file = null;
+          imageFiles.clear();
           uploading = false;
         });
         Navigator.pop(context);
       }).catchError((onError) {
-        print("beim Speichern des LInks vom Image");
+        print("Error beim upload von Image");
         print(onError);
       });
     } else {
       if (descriptionController.text != "" && tagFilter != "") {
         posting = true;
-        postToFireStore();
-
+        postToFireStore(null, tagFilter);
         Navigator.pop(context);
       }
     }
   }
+  
 }
 
 class PostForm extends StatelessWidget {
@@ -330,15 +331,5 @@ class PostForm extends StatelessWidget {
   }
 }
 
-Future<String> uploadImage(var imageFile) async {
-  // var uuid = new Uuid().v1();
-  // StorageReference ref = FirebaseStorage.instance.ref().child("post_$uuid.jpg");
-  // StorageUploadTask uploadTask = ref.putFile(imageFile);
-
-  // String downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
-  // return downloadUrl;
-}
-
-void postToFireStore() {}
 
 typedef PostFormCallback = void Function();
