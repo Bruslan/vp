@@ -177,6 +177,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
             Navigator.of(context).push(CupertinoPageRoute(
                 fullscreenDialog: true,
                 builder: (context) => ProfilePage(
+                      currentUser: false,
                       targetUserId: widget.feedModel.userId,
                     )));
           },

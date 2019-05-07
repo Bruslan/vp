@@ -10,12 +10,103 @@ import 'auth_class.dart';
 
 class ProfilePage extends StatelessWidget {
   final String targetUserId;
-  const ProfilePage({Key key, this.targetUserId}) : super(key: key);
+  final bool currentUser;
+  const ProfilePage({Key key, this.targetUserId, @required this.currentUser})
+      : super(key: key);
 
   void changeProfilePicture(File imageFile) async {
     uploadImage(imageFile).then((downLoadUrl) {
       updateProfilePicture(targetUserId, downLoadUrl);
     });
+  }
+
+  Widget _buildProfileImage() {
+    return FutureBuilder(
+      future: getUserProfile(targetUserId),
+      builder: (BuildContext context, AsyncSnapshot<User> user) {
+        if (user.hasData) {
+          if (user.data != null) {
+            if (user.data.profileImageUrl != "") {
+              return Stack(
+                children: <Widget>[
+                  Image(
+                    fit: BoxFit.fitWidth,
+                    image:
+                        CachedNetworkImageProvider(user.data.profileImageUrl),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.all(3.0),
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: .5,
+                                  spreadRadius: 1.0,
+                                  color: Colors.black.withOpacity(.22))
+                            ],
+                            color: Color.fromARGB(200, 0, 0, 0),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: Text(
+                            user.data.userName,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            } else {
+              return Stack(
+                alignment: AlignmentDirectional.center,
+                children: <Widget>[
+                  new Image(
+                    fit: BoxFit.fitWidth,
+                    image: ExactAssetImage("images/anonym.png"),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.all(3.0),
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: .5,
+                                  spreadRadius: 1.0,
+                                  color: Colors.black.withOpacity(.22))
+                            ],
+                            color: Color.fromARGB(150, 0, 0, 0),
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                          child: Text(
+                            user.data.userName,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }
+          }
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
   }
 
   @override
@@ -44,6 +135,62 @@ class ProfilePage extends StatelessWidget {
       );
     }
 
+    Widget _menuButton() {
+      return Positioned(
+        top: 10,
+        right: 10,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              // margin: const EdgeInsets.all(3.0),
+              // padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: .5,
+                      spreadRadius: 1.0,
+                      color: Colors.black.withOpacity(.22))
+                ],
+                color: Color.fromARGB(150, 0, 0, 0),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () {
+                      showModalBottomSheet<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return new Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                buildProfileMenu(),
+                                new ListTile(
+                                  leading: new Icon(Icons.cancel),
+                                  title: new Text('Abbrechen'),
+                                  onTap: () => Navigator.pop(context),
+                                ),
+                                new ListTile(
+                                  leading: new Icon(Icons.cancel),
+                                  title: new Text('Abbrechen'),
+                                  onTap: () => Navigator.pop(context),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    icon: Icon(Icons.settings),
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
     return new Scaffold(
         body: new CustomScrollView(
       slivers: <Widget>[
@@ -55,155 +202,10 @@ class ProfilePage extends StatelessWidget {
             background: Stack(
               children: <Widget>[
                 Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: FutureBuilder(
-                      future: getUserProfile(targetUserId),
-                      builder:
-                          (BuildContext context, AsyncSnapshot<User> user) {
-                        if (user.hasData) {
-                          if (user.data != null) {
-                            if (user.data.profileImageUrl != "") {
-                              return Stack(
-                                children: <Widget>[
-                                  Image(
-                                    fit: BoxFit.fitWidth,
-                                    image: CachedNetworkImageProvider(
-                                        user.data.profileImageUrl),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 10,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Container(
-                                          margin: const EdgeInsets.all(3.0),
-                                          padding: const EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  blurRadius: .5,
-                                                  spreadRadius: 1.0,
-                                                  color: Colors.black
-                                                      .withOpacity(.22))
-                                            ],
-                                            color: Color.fromARGB(200, 0, 0, 0),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                          ),
-                                          child: Text(
-                                            user.data.userName,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              );
-                            } else {
-                              return Stack(
-                                alignment: AlignmentDirectional.center,
-                                children: <Widget>[
-                                  new Image(
-                                    fit: BoxFit.fitWidth,
-                                    image: ExactAssetImage("images/anonym.png"),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 10,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Container(
-                                          margin: const EdgeInsets.all(3.0),
-                                          padding: const EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  blurRadius: .5,
-                                                  spreadRadius: 1.0,
-                                                  color: Colors.black
-                                                      .withOpacity(.22))
-                                            ],
-                                            color: Color.fromARGB(200, 0, 0, 0),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                          ),
-                                          child: Text(
-                                            user.data.userName,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              );
-                            }
-                          }
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      },
-                    )),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(3.0),
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: .5,
-                                spreadRadius: 1.0,
-                                color: Colors.black.withOpacity(.22))
-                          ],
-                          color: Color.fromARGB(200, 0, 0, 0),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: () {
-                                showModalBottomSheet<void>(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return new Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          buildProfileMenu(),
-                                          new ListTile(
-                                            leading: new Icon(Icons.cancel),
-                                            title: new Text('Abbrechen'),
-                                            onTap: () => Navigator.pop(context),
-                                          ),
-                                          new ListTile(
-                                            leading: new Icon(Icons.cancel),
-                                            title: new Text('Abbrechen'),
-                                            onTap: () => Navigator.pop(context),
-                                          ),
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: Icon(Icons.settings),
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                  width: MediaQuery.of(context).size.width,
+                  child: _buildProfileImage(),
+                ),
+                currentUser ?_menuButton() : Container(),
               ],
             ),
           ),

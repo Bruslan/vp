@@ -60,6 +60,7 @@ class _TabbarPageState extends State<TabbarPage> {
           case 2:
             return CupertinoTabView(
               builder: (BuildContext context) => ProfilePage(
+                currentUser: true,
                     targetUserId: widget.firebaseUser.uid,
                   ),
             );
