@@ -43,9 +43,7 @@ class _TabbarPageState extends State<TabbarPage> {
             return CupertinoTabView(
               builder: (BuildContext context) {
                 return Container(
-                  child: FeedPage(
-                    currentFirebaseUser: widget.firebaseUser
-                  ),
+                  child: FeedPage(currentFirebaseUser: widget.firebaseUser),
                 );
               },
             );
@@ -53,14 +51,15 @@ class _TabbarPageState extends State<TabbarPage> {
           case 1:
             return CupertinoTabView(
               builder: (BuildContext context) => Container(
-                    child: ConversationPage(),
+                    child: ConversationPage(
+                        currentUserID: widget.firebaseUser.uid),
                   ),
             );
             break;
           case 2:
             return CupertinoTabView(
               builder: (BuildContext context) => ProfilePage(
-                currentUser: true,
+                    currentUser: true,
                     targetUserId: widget.firebaseUser.uid,
                   ),
             );

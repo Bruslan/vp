@@ -132,6 +132,15 @@ Stream<QuerySnapshot> getChatStream(String conversationID){
                       .snapshots();
 }
 
+Stream<QuerySnapshot> getConversationStream(String userID){
+  return Firestore.instance
+                      .collection("conversations")
+                      .document(userID)
+                      .collection("conversations")
+                      .orderBy('timestamp', descending: true)
+                      .snapshots();
+}
+
 
 
 Future saveTextChat(ChatMessage chatMessage, String conversationId) {
