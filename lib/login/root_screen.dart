@@ -20,8 +20,11 @@ class _RootScreenState extends State<RootScreen> {
           );
         } else {
           if (snapshot.hasData) {
-            return new TabbarPage(
+            return InheritedUser(
+              fbuser: snapshot.data,
+                          child: new TabbarPage(
     
+              ),
             );
           } else {
             return SignInScreen();
@@ -30,4 +33,21 @@ class _RootScreenState extends State<RootScreen> {
       },
     );
   }
+}
+
+
+class InheritedUser extends InheritedWidget{
+
+
+final FirebaseUser fbuser;
+  InheritedUser({this.fbuser, Widget child}): super(child:child);
+  @override
+  bool updateShouldNotify(InheritedWidget oldWidget) {
+    // TODO: implement updateShouldNotify
+    return null;
+  }
+
+  static InheritedUser of(BuildContext context) =>
+  context.inheritFromWidgetOfExactType(InheritedUser);
+
 }

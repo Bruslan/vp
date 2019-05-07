@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -167,17 +168,19 @@ class _CreateFeedModal extends State<CreateFeedModal> {
 
     FirebaseUser currentUserFirebase = await Auth().getCurrentUser();
     User currentUser = await getUserProfile(currentUserFirebase.uid);
+    final Firestore _firestore = Firestore.instance;
+    DocumentReference reference = _firestore.collection("feeds").document();
 
     FeedModel feed = new FeedModel(
-      userName: currentUser.userName,
-      userId: currentUserFirebase.uid,
-      imageUrls: imageUrls,
-      textContent: descriptionController.text,
-      tag: tag,
-      timestamp: new DateTime.now().toString(),
-    );
+        userName: currentUser.userName,
+        userId: currentUserFirebase.uid,
+        imageUrls: imageUrls,
+        textContent: descriptionController.text,
+        tag: tag,
+        timestamp: new DateTime.now().toString(),
+        postId: reference.documentID);
 
-    uploadFeed(feed);
+    uploadFeed(feed, reference);
   }
 
   Future<Null> _cropImage(File imageFile) async {

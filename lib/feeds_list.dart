@@ -62,6 +62,7 @@ class _FeedsListState extends State<FeedsList> {
                 itemBuilder: (BuildContext context, int index) {
                   return FeedFromModel(
                     feedModel: feedModelList[index],
+                    onDeleted: _refresh
                   );
                 },
               ),

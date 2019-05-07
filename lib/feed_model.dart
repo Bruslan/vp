@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:vp/login/root_screen.dart';
 import 'package:vp/user_model.dart';
 import 'database_logic.dart';
 
@@ -55,16 +56,24 @@ class FeedModel {
   }
 }
 
+typedef FeedCallback = void Function();
+
 class FeedFromModel extends StatefulWidget {
   final FeedModel feedModel;
-  const FeedFromModel({Key key, @required this.feedModel}) : super(key: key);
+  final FeedCallback onDeleted;
+
+  const FeedFromModel({Key key, @required this.feedModel, this.onDeleted})
+      : super(key: key);
 
   @override
-  _FeedFromModelState createState() => _FeedFromModelState();
+  _FeedFromModelState createState() => _FeedFromModelState(onDeleted);
 }
 
 class _FeedFromModelState extends State<FeedFromModel> {
   int voted = 0;
+  final FeedCallback onDeleted;
+
+  _FeedFromModelState(this.onDeleted);
 
   GestureDetector buildLikeableImage() {
     return new GestureDetector(
@@ -113,6 +122,29 @@ class _FeedFromModelState extends State<FeedFromModel> {
     );
   }
 
+  Widget buildDeleteOrReport() {
+    if (InheritedUser.of(context).fbuser.uid == widget.feedModel.userId) {
+      return new ListTile(
+        leading: new Icon(Icons.delete),
+        title: new Text('Löschen'),
+        onTap: () =>
+            removeDocument("feeds", widget.feedModel.postId).then((onValue) {
+              onDeleted();
+              Navigator.pop(context);
+            }),
+      );
+    } else {
+      return new ListTile(
+          leading: new Icon(Icons.delete),
+          title: new Text('Melden'),
+          onTap: () => reportFeed("reports", widget.feedModel.postId,
+                      InheritedUser.of(context).fbuser.uid)
+                  .then((onValue) {
+                Navigator.pop(context);
+              }));
+    }
+  }
+
   ListTile buildFeedHeader() {
     return new ListTile(
       leading: new FutureBuilder(
@@ -142,7 +174,23 @@ class _FeedFromModelState extends State<FeedFromModel> {
         style: TextStyle(fontSize: 12),
       ),
       trailing: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    buildDeleteOrReport(),
+                    new ListTile(
+                      leading: new Icon(Icons.cancel),
+                      title: new Text('Abbrechen'),
+                      onTap: () => Navigator.pop(context),
+                    ),
+                  ],
+                );
+              });
+        },
         icon: Icon(Icons.more_horiz),
       ),
     );
@@ -250,7 +298,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
         buildFeedHeader(),
         buildLikeableImage(),
         widget.feedModel.textContent != null ? buildTextContent() : SizedBox(),
-        buildFeedFooter()
+        // buildFeedFooter()
       ]),
     );
   }
