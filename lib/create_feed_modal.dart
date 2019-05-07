@@ -16,9 +16,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'auth_class.dart';
 
 class CreateFeedModal extends StatefulWidget {
-  final String currentUser;
 
-  CreateFeedModal({Key key, @required this.currentUser}) : super(key: key);
+  CreateFeedModal({Key key}) : super(key: key);
 
   _CreateFeedModal createState() => new _CreateFeedModal();
 }

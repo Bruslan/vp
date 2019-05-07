@@ -15,12 +15,9 @@ class _FeedPageState extends State<FeedPage> {
       appBar: CupertinoNavigationBar(
         trailing: IconButton(
           onPressed: () {
-            Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-              builder: (context) => CreateFeedModal(
-                    currentUser: null,
-                    
-                  ),
-            ));
+            Navigator.of(context).push(CupertinoPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => CreateFeedModal()));
           },
           icon: Icon(CupertinoIcons.create),
         ),

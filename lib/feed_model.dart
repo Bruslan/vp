@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vp/login/root_screen.dart';
+import 'package:vp/profile_page.dart';
 import 'package:vp/user_model.dart';
 import 'database_logic.dart';
 
@@ -170,7 +171,15 @@ class _FeedFromModelState extends State<FeedFromModel> {
           }
         },
       ),
-      title: Text(widget.feedModel.userName),
+      title: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(CupertinoPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => ProfilePage(
+                      targetUserId: widget.feedModel.userId,
+                    )));
+          },
+          child: Text(widget.feedModel.userName)),
       subtitle: Text(
         "Unter Titel Maraschki",
         style: TextStyle(fontSize: 12),
