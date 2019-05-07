@@ -18,6 +18,7 @@ class _FeedPageState extends State<FeedPage> {
             Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
               builder: (context) => CreateFeedModal(
                     currentUser: null,
+                    
                   ),
             ));
           },

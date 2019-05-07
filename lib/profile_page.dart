@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vp/database_logic.dart';
+import 'package:vp/user_model.dart';
 import 'auth_class.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key key}) : super(key: key);
+  final String targetUserId;
+  const ProfilePage({Key key, this.targetUserId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +23,29 @@ class ProfilePage extends StatelessWidget {
               children: <Widget>[
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    child: Image.network(
-                      'http://i.pravatar.cc/300',
-                      fit: BoxFit.fitWidth,
+                    child: FutureBuilder(
+                      future: getUserProfile(targetUserId),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<User> user) {
+                        if (user.hasData) {
+                          if (user.data != null) {
+                            if (user.data.profileImageUrl != "") {
+                              return Image(
+                                fit: BoxFit.fitWidth,
+                                image: CachedNetworkImageProvider(
+                                    user.data.profileImageUrl),
+                              );
+                            } else {
+                              return new Image(
+                                fit: BoxFit.fitWidth,
+                                image: ExactAssetImage("images/anonym.png"),
+                              );
+                            }
+                          }
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
                     )),
                 Positioned(
                   top: 10,

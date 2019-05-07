@@ -34,12 +34,10 @@ Future<List<String>> uploadImages(List<File> imageFiles) async {
 }
 
 Future<void> uploadFeed(FeedModel feed, DocumentReference reference) async {
-
   reference.setData(feed.toJson()).catchError((error) {
     print("error beim uploaden des Feeds");
   });
 }
-
 
 Future<void> createUser(User user) async {
   DocumentReference reference = _firestore.collection("users").document();
@@ -109,6 +107,7 @@ Future<User> getUserProfile(String userId) async {
 Future<void> removeDocument(String collection, String documentId) {
   return _firestore.collection(collection).document(documentId).delete();
 }
+
 Future<void> reportFeed(String collection, String postId, String reporter) {
   return _firestore
       .collection(collection)

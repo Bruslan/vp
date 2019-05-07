@@ -150,22 +150,24 @@ class _FeedFromModelState extends State<FeedFromModel> {
       leading: new FutureBuilder(
         future: getUserProfile(widget.feedModel.userId),
         builder: (BuildContext context, AsyncSnapshot<User> user) {
-          if (user.data != null) {
-            user.data.profileImageUrl != ""
-                ? CircleAvatar(
-                    backgroundImage:
-                        CachedNetworkImageProvider(user.data.profileImageUrl),
-                    backgroundColor: Colors.grey,
-                  )
-                : new CircleAvatar(
-                    backgroundImage: ExactAssetImage("images/anonym.png"),
-                    backgroundColor: Colors.grey,
-                  );
+          if (user.hasData) {
+            if (user.data != null) {
+              if (user.data.profileImageUrl != "") {
+                return CircleAvatar(
+                  backgroundImage:
+                      CachedNetworkImageProvider(user.data.profileImageUrl),
+                  backgroundColor: Colors.grey,
+                );
+              } else {
+                return new CircleAvatar(
+                  backgroundImage: ExactAssetImage("images/anonym.png"),
+                  backgroundColor: Colors.grey,
+                );
+              }
+            }
+          } else {
+            return CircularProgressIndicator();
           }
-          return new CircleAvatar(
-            backgroundImage: ExactAssetImage("images/anonym.png"),
-            backgroundColor: Colors.grey,
-          );
         },
       ),
       title: Text(widget.feedModel.userName),
