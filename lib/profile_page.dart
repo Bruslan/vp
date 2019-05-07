@@ -48,10 +48,13 @@ class ProfilePage extends StatelessWidget {
               if (user.data.profileImageUrl != "") {
                 return Stack(
                   children: <Widget>[
-                    Image(
-                      fit: BoxFit.fitWidth,
-                      image:
-                          CachedNetworkImageProvider(user.data.profileImageUrl),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Image(
+                        fit: BoxFit.fitWidth,
+                        image:
+                            CachedNetworkImageProvider(user.data.profileImageUrl),
+                      ),
                     ),
                     Positioned(
                       bottom: 10,

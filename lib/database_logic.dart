@@ -152,6 +152,12 @@ Future saveTextChat(ChatMessage chatMessage, String conversationId) {
       .setData(chatMessage.toJson());
 }
 
+
+Future<void> removeConversation(String userID, String collectionID) {
+  return _firestore.collection("conversations").document(userID).collection("conversations").document(collectionID).delete();
+}
+
+
 saveConversation(String receiverID, String message, String senderID,
   String conversationID, User currentUser, User receiverUser) async {
  

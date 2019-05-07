@@ -210,8 +210,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                   Navigator.pop(context);
                   File imageFile = await ImagePicker.pickImage(
                       source: ImageSource.camera,
-                      maxHeight: 400,
-                      maxWidth: 400);
+                      maxHeight: 500,
+                      maxWidth: 500);
                   _cropImage(imageFile);
                 }),
             new SimpleDialogOption(
@@ -220,8 +220,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                   Navigator.of(context).pop();
                   File imageFile = await ImagePicker.pickImage(
                       source: ImageSource.gallery,
-                      maxHeight: 400,
-                      maxWidth: 400);
+                      maxHeight: 1000,
+                      maxWidth: 1000);
 
                   _cropImage(imageFile);
                 }),
