@@ -1,13 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vp/auth_class.dart';
-import 'package:vp/login/root_screen.dart';
+
 import 'feed_page.dart';
 import 'conversations_page.dart';
 import 'profile_page.dart';
 
 class TabbarPage extends StatefulWidget {
-  const TabbarPage({Key key, String userId, BaseAuth auth, onSignedOut})
+  final FirebaseUser firebaseUser;
+  const TabbarPage(
+      {Key key, String userId, BaseAuth auth, onSignedOut, this.firebaseUser})
       : super(key: key);
 
   @override
@@ -40,7 +43,9 @@ class _TabbarPageState extends State<TabbarPage> {
             return CupertinoTabView(
               builder: (BuildContext context) {
                 return Container(
-                  child: FeedPage(),
+                  child: FeedPage(
+                    currentFirebaseUser: widget.firebaseUser
+                  ),
                 );
               },
             );
@@ -55,7 +60,7 @@ class _TabbarPageState extends State<TabbarPage> {
           case 2:
             return CupertinoTabView(
               builder: (BuildContext context) => ProfilePage(
-                    targetUserId: InheritedUser.of(context).fbuser.uid,
+                    targetUserId: widget.firebaseUser.uid,
                   ),
             );
             break;

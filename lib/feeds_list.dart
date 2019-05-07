@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'feed_model.dart';
@@ -5,7 +6,8 @@ import 'database_logic.dart';
 import 'filter_pins.dart';
 
 class FeedsList extends StatefulWidget {
-  FeedsList({Key key}) : super(key: key);
+  final FirebaseUser currentUser;
+  FeedsList({Key key, this.currentUser}) : super(key: key);
 
   _FeedsListState createState() => _FeedsListState();
 }
@@ -41,7 +43,6 @@ class _FeedsListState extends State<FeedsList> {
     setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -61,9 +62,9 @@ class _FeedsListState extends State<FeedsList> {
                 itemCount: feedModelList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return FeedFromModel(
-                    feedModel: feedModelList[index],
-                    onDeleted: _refresh
-                  );
+                      currentUserID: widget.currentUser.uid,
+                      feedModel: feedModelList[index],
+                      onDeleted: _refresh);
                 },
               ),
               onRefresh: _refresh),

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:vp/login/root_screen.dart';
 import 'package:vp/profile_page.dart';
 import 'package:vp/user_model.dart';
 import 'database_logic.dart';
@@ -60,10 +59,12 @@ class FeedModel {
 typedef FeedCallback = void Function();
 
 class FeedFromModel extends StatefulWidget {
+  final String currentUserID;
   final FeedModel feedModel;
   final FeedCallback onDeleted;
 
-  const FeedFromModel({Key key, @required this.feedModel, this.onDeleted})
+  const FeedFromModel(
+      {Key key, @required this.feedModel, this.onDeleted, this.currentUserID})
       : super(key: key);
 
   @override
@@ -124,7 +125,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
   }
 
   Widget buildDeleteOrReport() {
-    if (InheritedUser.of(context).fbuser.uid == widget.feedModel.userId) {
+    if (widget.currentUserID == widget.feedModel.userId) {
       return new ListTile(
         leading: new Icon(Icons.delete),
         title: new Text('Löschen'),
@@ -138,8 +139,8 @@ class _FeedFromModelState extends State<FeedFromModel> {
       return new ListTile(
           leading: new Icon(Icons.delete),
           title: new Text('Melden'),
-          onTap: () => reportFeed("reports", widget.feedModel.postId,
-                      InheritedUser.of(context).fbuser.uid)
+          onTap: () => reportFeed(
+                      "reports", widget.feedModel.postId, widget.currentUserID)
                   .then((onValue) {
                 Navigator.pop(context);
               }));
@@ -193,6 +194,11 @@ class _FeedFromModelState extends State<FeedFromModel> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     buildDeleteOrReport(),
+                    new ListTile(
+                      leading: new Icon(Icons.cancel),
+                      title: new Text('Abbrechen'),
+                      onTap: () => Navigator.pop(context),
+                    ),
                     new ListTile(
                       leading: new Icon(Icons.cancel),
                       title: new Text('Abbrechen'),

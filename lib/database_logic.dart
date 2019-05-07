@@ -104,6 +104,12 @@ Future<User> getUserProfile(String userId) async {
   return user;
 }
 
+Future<void> updateProfilePicture(String userId, String downloadUrl){
+  return _firestore.collection("users")
+        .document(userId)
+        .updateData({"profileImageUrl": downloadUrl});
+}
+
 Future<void> removeDocument(String collection, String documentId) {
   return _firestore.collection(collection).document(documentId).delete();
 }
