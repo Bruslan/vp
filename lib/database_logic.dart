@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:vp/chat_message_model.dart';
 import 'feed_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -119,4 +120,59 @@ Future<void> reportFeed(String collection, String postId, String reporter) {
       .collection(collection)
       .document(postId)
       .setData({reporter: true});
+}
+
+Stream<QuerySnapshot> getChatStream(String conversationID){
+  return Firestore.instance
+                      .collection("messages")
+                      .document(conversationID)
+                      .collection("messages")
+                      .orderBy('timestamp', descending: true)
+                      .limit(20)
+                      .snapshots();
+}
+
+
+
+Future saveTextChat(ChatMessage chatMessage, String conversationId) {
+  return _firestore
+      .collection("messages")
+      .document(conversationId)
+      .collection("messages")
+      .document()
+      .setData(chatMessage.toJson());
+}
+
+saveConversation(String receiverID, String message, String senderID,
+  String conversationID, User currentUser, User receiverUser) async {
+ 
+  _firestore
+      .collection("conversations")
+      .document(senderID)
+      .collection("conversations")
+      .document(conversationID)
+      .setData({
+    'username': receiverUser.userName,
+    'userId': senderID,
+    'lastMessage': message,
+    'receiverID': receiverID,
+    'avatarUrl': receiverUser.profileImageUrl,
+    'timestamp': new DateTime.now().toString(),
+    'conversationId': conversationID
+  }).then((onValue) {
+    _firestore
+        .collection("conversations")
+        .document(receiverID)
+        .collection("conversations")
+        .document(conversationID)
+        .setData({
+      'username': currentUser.userName,
+      'userId': receiverID,
+      'lastMessage': message,
+      'receiverID': senderID,
+      'avatarUrl': currentUser.profileImageUrl,
+      'timestamp': new DateTime.now().toString(),
+      'conversationId': conversationID
+    });
+  });
 }

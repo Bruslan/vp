@@ -1,7 +1,12 @@
 import 'dart:async';
 // import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vp/auth_class.dart';
+import 'package:vp/chat_message_model.dart';
+import 'package:vp/database_logic.dart';
+import 'package:vp/user_model.dart';
 import 'chat_bubble.dart';
 import 'dart:math';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,18 +16,9 @@ var currentUserEmail;
 var _scaffoldContext;
 
 class ChatPage extends StatefulWidget {
-  final String currentUser;
-  final String conversationId;
-  final String receiverID;
-  final String receiverUserName;
+  final String targetUserID;
 
-  const ChatPage(
-      {Key key,
-      this.currentUser,
-      this.conversationId,
-      this.receiverID,
-      this.receiverUserName})
-      : super(key: key);
+  const ChatPage({Key key, this.targetUserID}) : super(key: key);
   @override
   ChatPageState createState() {
     return new ChatPageState();
@@ -30,73 +26,91 @@ class ChatPage extends StatefulWidget {
 }
 
 class ChatPageState extends State<ChatPage> {
+  String groupID;
+  String currentUserID;
+  User currentUserModel;
+  User receiverUserModel;
   final TextEditingController _textEditingController =
       new TextEditingController();
   bool _isComposingMessage = false;
-
-  String groupChatId;
   final ScrollController listScrollController = new ScrollController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getConversationID();
+   getUserModels();
+    
+  }
+
+  getConversationID() async {
+    FirebaseUser currentFirebaseUser = await Auth().getCurrentUser();
+
+    currentUserID = currentFirebaseUser.uid;
+    if (currentFirebaseUser.uid.hashCode <= widget.targetUserID.hashCode) {
+      groupID = '${currentFirebaseUser.uid}-${widget.targetUserID}';
+    } else {
+      groupID = '${widget.targetUserID}-${currentFirebaseUser.uid}';
+    }
+    setState(() {});
+  }
+
+  Future getUserModels() async{
+    
+  currentUserModel = await getUserProfile(currentUserID);
+  receiverUserModel = await getUserProfile(widget.targetUserID);
+
+  setState(() {
+    
+  });
+
+  }
+
+  Widget _buildChatStream() {
+    return StreamBuilder(
+      stream: getChatStream(groupID),
+      builder: (BuildContext context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(
+                Color.fromRGBO(212, 20, 15, 1.0),
+              ),
+            ),
+          );
+        } else {
+          return new ListView.builder(
+              reverse: true,
+              controller: listScrollController,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) {
+                ChatMessage chatMessage = ChatMessage.fromDocument(snapshot.data.documents[index]);
+               
+                return Bubble(
+                  time: DateTime.parse(chatMessage.timestamp).hour.toString(),
+                  message: chatMessage.message,
+                  delivered: true,
+                  isMe:   chatMessage.ownerId != currentUserID,
+                );
+              });
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return new Scaffold(
         appBar: CupertinoNavigationBar(
-          middle: Text("Chat mit Kakaschki"),
+          middle: Text(receiverUserModel != null ? receiverUserModel.userName : "Loading..")
+          
         ),
         body: new Container(
           child: new Column(
             children: <Widget>[
               new Flexible(
-                // child: StreamBuilder(
-                //   stream: Firestore.instance
-                //       .collection("messages")
-                //       .document(groupChatId)
-                //       .collection("messages")
-                //       .orderBy('timestamp', descending: true)
-                //       .limit(20)
-                //       .snapshots(),
-
-                child: new ListView.builder(
-                    reverse: true,
-                    controller: listScrollController,
-                    itemCount: 20,
-                    itemBuilder: (context, index) {
-                      Random random = new Random();
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Slidable(
-                          delegate: new SlidableDrawerDelegate(),
-                          actionExtentRatio: 0.25,
-                          child: GestureDetector(
-                
-                            child: Bubble(
-                              message: "hallo das ist ein Beispiel Chat tesxt",
-                              time: "12:02",
-                              isMe: random.nextBool(),
-                              delivered: true,
-                            ),
-                          ),
-                          secondaryActions: <Widget>[
-                            new IconSlideAction(
-                                caption: 'More',
-                                color: Colors.black45,
-                                icon: Icons.more_horiz,
-                                onTap: () => {}),
-                            new IconSlideAction(
-                                caption: 'Delete',
-                                color: Colors.red,
-                                icon: Icons.delete,
-                                onTap: () => {}),
-                          ],
-                        ),
-                      );
-                    }),
-              ),
+                  child: groupID != null ? _buildChatStream() : Container()),
               new Divider(height: 1.0),
               new Container(
                 decoration:
@@ -122,7 +136,7 @@ class ChatPageState extends State<ChatPage> {
   CupertinoButton getIOSSendButton() {
     return new CupertinoButton(
       child: new Text("Send"),
-      onPressed: _isComposingMessage
+      onPressed: _isComposingMessage && receiverUserModel != null
           ? () => _textMessageSubmitted(_textEditingController.text)
           : null,
     );
@@ -190,5 +204,19 @@ class ChatPageState extends State<ChatPage> {
     _sendMessage(messageText: text, imageUrl: null);
   }
 
-  void _sendMessage({String messageText, String imageUrl}) {}
+  void _sendMessage({String messageText, String imageUrl})  {
+    ChatMessage chatMessage = new ChatMessage(
+      ownerId: currentUserID,
+      message: messageText,
+      timestamp: DateTime.now().toString(),
+    );
+
+    saveTextChat(chatMessage, groupID).then((onValue) {
+      listScrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+      saveConversation(
+          widget.targetUserID, messageText, currentUserID, groupID, currentUserModel, receiverUserModel);
+      // analytics.logEvent(name: 'send_message');
+    });
+  }
 }

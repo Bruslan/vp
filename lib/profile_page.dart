@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:vp/chat_page.dart';
 import 'package:vp/database_logic.dart';
 import 'package:vp/user_model.dart';
 import 'auth_class.dart';
@@ -20,97 +21,122 @@ class ProfilePage extends StatelessWidget {
     });
   }
 
-  Widget _buildProfileImage() {
-    return FutureBuilder(
-      future: getUserProfile(targetUserId),
-      builder: (BuildContext context, AsyncSnapshot<User> user) {
-        if (user.hasData) {
-          if (user.data != null) {
-            if (user.data.profileImageUrl != "") {
-              return Stack(
-                children: <Widget>[
-                  Image(
-                    fit: BoxFit.fitWidth,
-                    image:
-                        CachedNetworkImageProvider(user.data.profileImageUrl),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.all(3.0),
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: .5,
-                                  spreadRadius: 1.0,
-                                  color: Colors.black.withOpacity(.22))
-                            ],
-                            color: Color.fromARGB(200, 0, 0, 0),
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          child: Text(
-                            user.data.userName,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              );
-            } else {
-              return Stack(
-                alignment: AlignmentDirectional.center,
-                children: <Widget>[
-                  new Image(
-                    fit: BoxFit.fitWidth,
-                    image: ExactAssetImage("images/anonym.png"),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.all(3.0),
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: .5,
-                                  spreadRadius: 1.0,
-                                  color: Colors.black.withOpacity(.22))
-                            ],
-                            color: Color.fromARGB(150, 0, 0, 0),
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                          ),
-                          child: Text(
-                            user.data.userName,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              );
-            }
-          }
-        } else {
-          return CircularProgressIndicator();
-        }
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    _buildSentButton() {
+      return IconButton(
+        onPressed: () {
+          Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+            builder: (context) => ChatPage(
+              targetUserID: targetUserId
+            ),
+          ));
+        },
+        icon: Icon(
+          CupertinoIcons.mail,
+          color: Colors.white,
+        ),
+      );
+    }
+
+    Widget _buildProfileImage() {
+      return FutureBuilder(
+        future: getUserProfile(targetUserId),
+        builder: (BuildContext context, AsyncSnapshot<User> user) {
+          if (user.hasData) {
+            if (user.data != null) {
+              if (user.data.profileImageUrl != "") {
+                return Stack(
+                  children: <Widget>[
+                    Image(
+                      fit: BoxFit.fitWidth,
+                      image:
+                          CachedNetworkImageProvider(user.data.profileImageUrl),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.all(3.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: .5,
+                                    spreadRadius: 1.0,
+                                    color: Colors.black.withOpacity(.22))
+                              ],
+                              color: Color.fromARGB(150, 0, 0, 0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  user.data.userName,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                currentUser == true
+                                    ? Container()
+                                    : _buildSentButton()
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                );
+              } else {
+                return Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    new Image(
+                      fit: BoxFit.fitWidth,
+                      image: ExactAssetImage("images/anonym.png"),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.all(3.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: .5,
+                                    spreadRadius: 1.0,
+                                    color: Colors.black.withOpacity(.22))
+                              ],
+                              color: Color.fromARGB(150, 0, 0, 0),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
+                            ),
+                            child: Text(
+                              user.data.userName,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                );
+              }
+            }
+          } else {
+            return CircularProgressIndicator();
+          }
+        },
+      );
+    }
+
     Widget buildProfileMenu() {
       return Column(
         children: <Widget>[
@@ -205,7 +231,7 @@ class ProfilePage extends StatelessWidget {
                   width: MediaQuery.of(context).size.width,
                   child: _buildProfileImage(),
                 ),
-                currentUser ?_menuButton() : Container(),
+                currentUser ? _menuButton() : Container(),
               ],
             ),
           ),

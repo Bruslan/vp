@@ -4,7 +4,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'chat_page.dart';
 
 class ConversationPage extends StatelessWidget {
-  const ConversationPage({Key key}) : super(key: key);
+  final String currentUserID;
+  const ConversationPage({Key key, this.currentUserID}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
