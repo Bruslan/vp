@@ -23,13 +23,20 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _signOut() async {
+      try {
+        await Auth().signOut();
+        Navigator.of(context).pop();
+      } catch (e) {
+        print(e);
+      }
+    }
+
     _buildSentButton() {
       return IconButton(
         onPressed: () {
           Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) => ChatPage(
-              targetUserID: targetUserId
-            ),
+            builder: (context) => ChatPage(targetUserID: targetUserId),
           ));
         },
         icon: Icon(
@@ -52,8 +59,8 @@ class ProfilePage extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Image(
                         fit: BoxFit.fitWidth,
-                        image:
-                            CachedNetworkImageProvider(user.data.profileImageUrl),
+                        image: CachedNetworkImageProvider(
+                            user.data.profileImageUrl),
                       ),
                     ),
                     Positioned(
@@ -266,13 +273,5 @@ class ProfilePage extends StatelessWidget {
         )
       ],
     ));
-  }
-
-  _signOut() async {
-    try {
-      await Auth().signOut();
-    } catch (e) {
-      print(e);
-    }
   }
 }

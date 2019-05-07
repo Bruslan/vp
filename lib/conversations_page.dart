@@ -49,11 +49,7 @@ class ConversationPage extends StatelessWidget {
                                       ""
                                   ? new NetworkImage(snapshot
                                       .data.documents[index]["avatarUrl"])
-                                  : CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      backgroundImage:
-                                          ExactAssetImage("images/anonym.png"),
-                                    ),
+                                  : new ExactAssetImage("images/anonym.png"),
                             ),
                           ),
                         ),
@@ -68,8 +64,11 @@ class ConversationPage extends StatelessWidget {
                               color: Colors.red,
                               icon: Icons.delete,
                               onTap: () => {
-                                removeConversation(currentUserID, snapshot.data.documents[index]["conversationId"])
-                              }),
+                                    removeConversation(
+                                        currentUserID,
+                                        snapshot.data.documents[index]
+                                            ["conversationId"])
+                                  }),
                         ],
                       ),
                       Divider()
