@@ -149,28 +149,38 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   ListTile buildFeedHeader() {
     return new ListTile(
-      leading: new FutureBuilder(
-        future: getUserProfile(widget.feedModel.userId),
-        builder: (BuildContext context, AsyncSnapshot<User> user) {
-          if (user.hasData) {
-            if (user.data != null) {
-              if (user.data.profileImageUrl != "") {
-                return CircleAvatar(
-                  backgroundImage:
-                      CachedNetworkImageProvider(user.data.profileImageUrl),
-                  backgroundColor: Colors.grey,
-                );
-              } else {
-                return new CircleAvatar(
-                  backgroundImage: ExactAssetImage("images/anonym.png"),
-                  backgroundColor: Colors.grey,
-                );
-              }
-            }
-          } else {
-            return CircularProgressIndicator();
-          }
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(CupertinoPageRoute(
+              fullscreenDialog: true,
+              builder: (context) => ProfilePage(
+                    currentUser: false,
+                    targetUserId: widget.feedModel.userId,
+                  )));
         },
+        child: new FutureBuilder(
+          future: getUserProfile(widget.feedModel.userId),
+          builder: (BuildContext context, AsyncSnapshot<User> user) {
+            if (user.hasData) {
+              if (user.data != null) {
+                if (user.data.profileImageUrl != "") {
+                  return CircleAvatar(
+                    backgroundImage:
+                        CachedNetworkImageProvider(user.data.profileImageUrl),
+                    backgroundColor: Colors.grey,
+                  );
+                } else {
+                  return new CircleAvatar(
+                    backgroundImage: ExactAssetImage("images/anonym.png"),
+                    backgroundColor: Colors.grey,
+                  );
+                }
+              }
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
       ),
       title: GestureDetector(
           onTap: () {
