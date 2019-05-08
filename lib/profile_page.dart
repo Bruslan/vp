@@ -228,50 +228,54 @@ class ProfilePage extends StatelessWidget {
     }
 
     return new Scaffold(
+        // appBar: CupertinoNavigationBar(
+        //   middle: Text("Profile"),
+        // ),
         body: new CustomScrollView(
-      slivers: <Widget>[
-        SliverAppBar(
-          backgroundColor: Colors.white,
-          expandedHeight: 250.0,
-          // pinned: true,
-          flexibleSpace: new FlexibleSpaceBar(
-            background: Stack(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: _buildProfileImage(),
+          slivers: <Widget>[
+            SliverAppBar(
+              backgroundColor: Colors.white,
+              expandedHeight: 250.0,
+              // pinned: true,
+              flexibleSpace: new FlexibleSpaceBar(
+                background: Stack(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: _buildProfileImage(),
+                    ),
+                    currentUser ? _menuButton() : Container(),
+                  ],
                 ),
-                currentUser ? _menuButton() : Container(),
-              ],
+              ),
             ),
-          ),
-        ),
-        new SliverList(
-          delegate: new SliverChildBuilderDelegate(
-              (context, index) => new Card(
-                      child: new Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        new Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+            new SliverList(
+              delegate: new SliverChildBuilderDelegate(
+                  (context, index) => new Card(
+                          child: new Container(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              backgroundImage: new CachedNetworkImageProvider(
-                                  'http://i.pravatar.cc/40'),
+                            new Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage:
+                                      new CachedNetworkImageProvider(
+                                          'http://i.pravatar.cc/40'),
+                                ),
+                                SizedBox(width: 15.0),
+                                Text('I am the card content!!')
+                              ],
                             ),
-                            SizedBox(width: 15.0),
-                            Text('I am the card content!!')
                           ],
                         ),
-                      ],
-                    ),
-                  )),
-              childCount: 10),
-        )
-      ],
-    ));
+                      )),
+                  childCount: 10),
+            )
+          ],
+        ));
   }
 }

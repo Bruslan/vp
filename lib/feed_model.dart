@@ -151,7 +151,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
     return new ListTile(
       leading: GestureDetector(
         onTap: () {
-          Navigator.of(context).push(CupertinoPageRoute(
+          Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
               fullscreenDialog: true,
               builder: (context) => ProfilePage(
                     currentUser: false,
@@ -184,7 +184,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
       ),
       title: GestureDetector(
           onTap: () {
-            Navigator.of(context).push(CupertinoPageRoute(
+            Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
                 fullscreenDialog: true,
                 builder: (context) => ProfilePage(
                       currentUser: false,
