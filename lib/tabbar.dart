@@ -29,7 +29,18 @@ class _TabbarPageState extends State<TabbarPage> {
             icon: Icon(CupertinoIcons.home),
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.conversation_bubble),
+            icon: Stack(
+              children: <Widget>[
+                Icon(CupertinoIcons.conversation_bubble),
+                new Positioned(
+                  // draw a red marble
+                  top: 0.0,
+                  right: 0.0,
+                  child: new Icon(Icons.brightness_1,
+                      size: 8.0, color: Colors.redAccent),
+                )
+              ],
+            ),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.profile_circled),

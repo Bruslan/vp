@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vp/tabbar.dart';
 import 'package:vp/login/sign_in_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:vp/login/sign_up_screen.dart';
 
@@ -12,16 +13,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
         title: 'VayNaxGram',
         routes: <String, WidgetBuilder>{
           '/signup': (BuildContext context) => new SignUpScreen(),
           '/signin': (BuildContext context) => new SignInScreen(),
         },
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        // theme: CupertinoThemeData(
+        //   // primarySwatch: Colors.blue,
+        // ),
         home: new StreamBuilder<FirebaseUser>(
           stream: FirebaseAuth.instance.onAuthStateChanged,
           builder: (BuildContext context, snapshot) {
@@ -40,4 +45,3 @@ class MyApp extends StatelessWidget {
         ));
   }
 }
-
