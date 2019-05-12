@@ -15,9 +15,11 @@ class FeedModel {
   final String location;
   final String postId;
   final String timestamp;
+  final List<Map<String, dynamic>> options;
 
   FeedModel(
-      {this.userName,
+      {this.options,
+      this.userName,
       this.textContent,
       this.imageUrls,
       this.userId,
@@ -35,6 +37,7 @@ class FeedModel {
         imageUrls: json['imageUrls'] == null ? [] : json['imageUrls'],
         textContent: json['textContent'],
         userId: json['userId'],
+        options: json["options"],
         timestamp: json["timestamp"]);
   }
 
@@ -51,7 +54,8 @@ class FeedModel {
       "tag": tag,
       "location": location,
       "postId": postId,
-      "timestamp": timestamp
+      "timestamp": timestamp,
+      "options": options
     };
   }
 }
@@ -198,6 +202,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
       ),
       trailing: IconButton(
         onPressed: () {
+          incrementCounter("feeds", widget.feedModel.postId, true);
           showModalBottomSheet<void>(
               context: context,
               builder: (BuildContext context) {
@@ -233,80 +238,6 @@ class _FeedFromModelState extends State<FeedFromModel> {
         ));
   }
 
-  ListTile buildFeedFooter() {
-    return new ListTile(
-      leading: Row(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    voted = 1;
-                  });
-                },
-                icon: Icon(
-                  CupertinoIcons.up_arrow,
-                  color: voted != 1 ? Colors.grey : Colors.blue,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 5,
-                child: Text(
-                  "12",
-                  style: TextStyle(color: Colors.green, fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-          Stack(
-            children: <Widget>[
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    voted = -1;
-                  });
-                },
-                icon: Icon(
-                  CupertinoIcons.down_arrow,
-                  color: voted != -1 ? Colors.grey : Colors.blue,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 5,
-                child: Text(
-                  "1",
-                  style: TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-          //   Stack(
-          //               children: <Widget>[
-          IconButton(
-            onPressed: () {
-              setState(() {
-                voted = -1;
-              });
-            },
-            icon: Icon(
-              CupertinoIcons.conversation_bubble,
-              size: 35,
-            ),
-          ),
-          //       Positioned(
-          //  left: 15,
-          //  top:20,
-          //         child: Text("345", style: TextStyle(fontSize: 10,color: Colors.grey),))
-          //     ],
-          //   ),
-        ],
-      ),
-    );
-  }
-
   User feedUser;
   @override
   void initState() {
@@ -326,7 +257,6 @@ class _FeedFromModelState extends State<FeedFromModel> {
         buildFeedHeader(),
         buildLikeableImage(),
         widget.feedModel.textContent != null ? buildTextContent() : SizedBox(),
-        // buildFeedFooter()
       ]),
     );
   }

@@ -16,7 +16,6 @@ import 'package:image_cropper/image_cropper.dart';
 import 'auth_class.dart';
 
 class CreateFeedModal extends StatefulWidget {
-
   CreateFeedModal({Key key}) : super(key: key);
 
   _CreateFeedModal createState() => new _CreateFeedModal();
@@ -30,7 +29,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   Map<String, double> currentLocation = new Map();
   TextEditingController descriptionController = new TextEditingController();
   TextEditingController locationController = new TextEditingController();
-
+  List<Widget> optionsList = [];
   bool uploading = false;
   bool promted = false;
   bool posting = false;
@@ -58,7 +57,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         appBar: new CupertinoNavigationBar(
             backgroundColor: Colors.white70,
             middle: const Text(
-              'Post to',
+              'Create Post',
               style: const TextStyle(color: Colors.black),
             ),
             trailing: new FlatButton(
@@ -83,33 +82,15 @@ class _CreateFeedModal extends State<CreateFeedModal> {
           },
           child: new ListView(
             children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        anonym = !anonym;
-                      });
-                    },
-                    icon: Icon(
-                      Icons.security,
-                      color: anonym ? Colors.blue : Colors.grey,
-                    ),
-                  )
-                ],
-              ),
-
-              HorizontalImageViewList(
-                imageFileList: imageFiles,
-                onPhotoTapped: (index) {
-                  setState(() {
-                    imageFiles.removeAt(index);
-                  });
+              //  Hier komm ein TagPill rein
+              TagPills(
+                tags: tagsMap,
+                onTagsSet: (tags) {
+                  tagsMap = tags;
                 },
               ),
-
               new PostForm(
+                optionsList: optionsList,
                 onImagePressed: () {
                   _selectImage();
                 },
@@ -118,12 +99,13 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                 locationController: locationController,
                 loading: uploading,
               ),
-              new Divider(),
-              //  Hier komm ein TagPill rein
-              TagPills(
-                tags: tagsMap,
-                onTagsSet: (tags) {
-                  tagsMap = tags;
+
+              HorizontalImageViewList(
+                imageFileList: imageFiles,
+                onPhotoTapped: (index) {
+                  setState(() {
+                    imageFiles.removeAt(index);
+                  });
                 },
               ),
             ],
@@ -169,6 +151,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     User currentUser = await getUserProfile(currentUserFirebase.uid);
     final Firestore _firestore = Firestore.instance;
     DocumentReference reference = _firestore.collection("feeds").document();
+   
 
     FeedModel feed = new FeedModel(
         userName: currentUser.userName,
@@ -286,8 +269,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   }
 }
 
-class PostForm extends StatelessWidget {
+class PostForm extends StatefulWidget {
   final PostFormCallback onImagePressed;
+  final List<Widget> optionsList;
   final imageFiles;
   final TextEditingController descriptionController;
   final TextEditingController locationController;
@@ -295,31 +279,63 @@ class PostForm extends StatelessWidget {
 
   PostForm(
       {this.onImagePressed,
+      this.optionsList,
       this.imageFiles,
       this.descriptionController,
       this.loading,
       this.locationController});
 
+  @override
+  _PostFormState createState() => _PostFormState();
+}
+
+class _PostFormState extends State<PostForm> {
+  Widget _buildOptions() {
+    return Column(children: widget.optionsList);
+  }
+
   Widget build(BuildContext context) {
     return new Column(
       children: <Widget>[
-        loading
+        widget.loading
             ? new LinearProgressIndicator()
             : new Padding(padding: new EdgeInsets.only(top: 0.0)),
-        new Divider(),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        Column(
           children: <Widget>[
             new Container(
-              width: 250.0,
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: new TextField(
                 maxLines: 5,
-                controller: descriptionController,
+                controller: widget.descriptionController,
                 decoration: new InputDecoration(
                     hintText: "Write a caption...", border: InputBorder.none),
               ),
             ),
-            IconButton(onPressed: onImagePressed, icon: Icon(Icons.add_a_photo))
+            _buildOptions(),
+            Row(
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    widget.optionsList.add(OptionPill(
+                      optionNr: widget.optionsList.length + 1,
+                    ));
+                    setState(() {});
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.add),
+                      Text("Add Options"),
+                    ],
+                  ),
+                ),
+                FlatButton(
+                    onPressed: widget.onImagePressed,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[Icon(Icons.add), Text("Add a Photo")],
+                    )),
+              ],
+            )
           ],
         ),
         new Divider(),
@@ -327,14 +343,14 @@ class PostForm extends StatelessWidget {
           leading: new IconButton(
               onPressed: () async {
                 Address first = await getUserLocation();
-                locationController.text =
+                widget.locationController.text =
                     first.countryName + ", " + first.locality;
               },
               icon: Icon(Icons.pin_drop)),
           title: new Container(
             width: 250.0,
             child: new TextField(
-              controller: locationController,
+              controller: widget.locationController,
               decoration: new InputDecoration(
                   hintText: "Where was this photo taken?",
                   border: InputBorder.none),
@@ -342,6 +358,49 @@ class PostForm extends StatelessWidget {
           ),
         )
       ],
+    );
+  }
+}
+
+class OptionPill extends StatelessWidget {
+  final int optionNr;
+  final TextEditingController optionController;
+  const OptionPill({Key key, this.optionNr, this.optionController})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          const Radius.circular(30.0),
+        ),
+        color: Colors.white,
+      ),
+
+      // width: 250.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width - 100,
+            child: new TextField(
+              controller: optionController,
+              autofocus: true,
+              // controller: locationController,
+              decoration: new InputDecoration(
+                  hintText: "Option " + optionNr.toString(),
+                  border: InputBorder.none),
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.remove_circle),
+          )
+        ],
+      ),
     );
   }
 }

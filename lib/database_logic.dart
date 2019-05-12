@@ -105,10 +105,11 @@ Future<User> getUserProfile(String userId) async {
   return user;
 }
 
-Future<void> updateProfilePicture(String userId, String downloadUrl){
-  return _firestore.collection("users")
-        .document(userId)
-        .updateData({"profileImageUrl": downloadUrl});
+Future<void> updateProfilePicture(String userId, String downloadUrl) {
+  return _firestore
+      .collection("users")
+      .document(userId)
+      .updateData({"profileImageUrl": downloadUrl});
 }
 
 Future<void> removeDocument(String collection, String documentId) {
@@ -122,26 +123,24 @@ Future<void> reportFeed(String collection, String postId, String reporter) {
       .setData({reporter: true});
 }
 
-Stream<QuerySnapshot> getChatStream(String conversationID){
+Stream<QuerySnapshot> getChatStream(String conversationID) {
   return Firestore.instance
-                      .collection("messages")
-                      .document(conversationID)
-                      .collection("messages")
-                      .orderBy('timestamp', descending: true)
-                      .limit(20)
-                      .snapshots();
+      .collection("messages")
+      .document(conversationID)
+      .collection("messages")
+      .orderBy('timestamp', descending: true)
+      .limit(20)
+      .snapshots();
 }
 
-Stream<QuerySnapshot> getConversationStream(String userID){
+Stream<QuerySnapshot> getConversationStream(String userID) {
   return Firestore.instance
-                      .collection("conversations")
-                      .document(userID)
-                      .collection("conversations")
-                      .orderBy('timestamp', descending: true)
-                      .snapshots();
+      .collection("conversations")
+      .document(userID)
+      .collection("conversations")
+      .orderBy('timestamp', descending: true)
+      .snapshots();
 }
-
-
 
 Future saveTextChat(ChatMessage chatMessage, String conversationId) {
   return _firestore
@@ -152,15 +151,17 @@ Future saveTextChat(ChatMessage chatMessage, String conversationId) {
       .setData(chatMessage.toJson());
 }
 
-
 Future<void> removeConversation(String userID, String collectionID) {
-  return _firestore.collection("conversations").document(userID).collection("conversations").document(collectionID).delete();
+  return _firestore
+      .collection("conversations")
+      .document(userID)
+      .collection("conversations")
+      .document(collectionID)
+      .delete();
 }
 
-
 saveConversation(String receiverID, String message, String senderID,
-  String conversationID, User currentUser, User receiverUser) async {
- 
+    String conversationID, User currentUser, User receiverUser) async {
   _firestore
       .collection("conversations")
       .document(senderID)
@@ -190,4 +191,11 @@ saveConversation(String receiverID, String message, String senderID,
       'conversationId': conversationID
     });
   });
+}
+
+incrementCounter(String collection, String documentID, bool increment) {
+  _firestore
+      .collection(collection)
+      .document(documentID)
+      .updateData({"options": FieldValue.increment(increment ? 1 : -1)});
 }
