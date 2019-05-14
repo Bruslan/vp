@@ -15,7 +15,7 @@ class FeedModel {
   final String location;
   final String postId;
   final String timestamp;
-  final List<Map<String, dynamic>> options;
+  final List<dynamic> options;
 
   FeedModel(
       {this.options,
@@ -151,6 +151,43 @@ class _FeedFromModelState extends State<FeedFromModel> {
     }
   }
 
+  int _radioValue = -1;
+
+  void _handleRadioValueChange(int value) {
+    setState(() {
+      _radioValue = value;
+
+      print(_radioValue);
+    });
+  }
+
+  _buildOptions() {
+    return Container(
+      height: widget.feedModel.options.length.toDouble() * 50,
+      child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: widget.feedModel.options.length,
+        itemBuilder: (BuildContext context, int index) {
+          return FlatButton(
+            onPressed: () {
+              _handleRadioValueChange(index);
+            },
+            child: Row(
+              children: <Widget>[
+                Radio(
+                  groupValue: _radioValue,
+                  onChanged: _handleRadioValueChange,
+                  value: index,
+                ),
+                Text(widget.feedModel.options[index].keys.single.toString()),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   ListTile buildFeedHeader() {
     return new ListTile(
       leading: GestureDetector(
@@ -257,6 +294,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
         buildFeedHeader(),
         buildLikeableImage(),
         widget.feedModel.textContent != null ? buildTextContent() : SizedBox(),
+        _buildOptions(),
       ]),
     );
   }

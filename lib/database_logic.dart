@@ -198,4 +198,8 @@ incrementCounter(String collection, String documentID, bool increment) {
       .collection(collection)
       .document(documentID)
       .updateData({"options": FieldValue.increment(increment ? 1 : -1)});
+
+
 }
+
+

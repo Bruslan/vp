@@ -29,6 +29,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   Map<String, double> currentLocation = new Map();
   TextEditingController descriptionController = new TextEditingController();
   TextEditingController locationController = new TextEditingController();
+  final optionsControllers = List<TextEditingController>();
   List<Widget> optionsList = [];
   bool uploading = false;
   bool promted = false;
@@ -90,6 +91,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                 },
               ),
               new PostForm(
+                optionsControllers: optionsControllers,
                 optionsList: optionsList,
                 onImagePressed: () {
                   _selectImage();
@@ -151,9 +153,16 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     User currentUser = await getUserProfile(currentUserFirebase.uid);
     final Firestore _firestore = Firestore.instance;
     DocumentReference reference = _firestore.collection("feeds").document();
-   
+
+    List<Map<String, dynamic>> options = [];
+    optionsControllers.forEach((f) {
+      if (f.text != "") {
+        options.add({f.text: 0});
+      }
+    });
 
     FeedModel feed = new FeedModel(
+        options: options,
         userName: currentUser.userName,
         userId: currentUserFirebase.uid,
         imageUrls: imageUrls,
@@ -275,10 +284,12 @@ class PostForm extends StatefulWidget {
   final imageFiles;
   final TextEditingController descriptionController;
   final TextEditingController locationController;
+  final List<TextEditingController> optionsControllers;
   final bool loading;
 
   PostForm(
-      {this.onImagePressed,
+      {this.optionsControllers,
+      this.onImagePressed,
       this.optionsList,
       this.imageFiles,
       this.descriptionController,
@@ -316,7 +327,12 @@ class _PostFormState extends State<PostForm> {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
+                    TextEditingController optionsController =
+                        new TextEditingController();
+                    widget.optionsControllers.add(optionsController);
+
                     widget.optionsList.add(OptionPill(
+                      optionController: optionsController,
                       optionNr: widget.optionsList.length + 1,
                     ));
                     setState(() {});
