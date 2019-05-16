@@ -159,7 +159,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
         onPressed: () =>
             removeDocument("feeds", widget.feedModel.postId).then((onValue) {
               onDeleted();
-              Navigator.of(context, rootNavigator: true).pop("Discard");
+              Navigator.of(context, rootNavigator: true).pop("Eintrag wurde gelöscht");
             }),
       );
     } else {
@@ -168,7 +168,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
           onPressed: () => reportFeed(
                       "reports", widget.feedModel.postId, widget.currentUserID)
                   .then((onValue) {
-                Navigator.of(context, rootNavigator: true).pop("Discard");
+                Navigator.of(context, rootNavigator: true).pop("Danke für das Melde");
               }));
     }
   }
@@ -176,13 +176,23 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
 
   int _radioValue = -1;
+  bool _showOptionPercentage = false;
 
   void _handleRadioValueChange(int value) {
     setState(() {
+
       _radioValue = value;
+      _showOptionPercentage = true;
 
       print(_radioValue);
     });
+  }
+
+  Widget _calculateOptionPercentage(int index){
+
+    final testMap = [90,10,80,22];
+    
+    return Text(testMap[index].toString() +"%");
   }
 
   _buildOptions() {
@@ -197,13 +207,20 @@ class _FeedFromModelState extends State<FeedFromModel> {
               _handleRadioValueChange(index);
             },
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Radio(
-                  groupValue: _radioValue,
-                  onChanged: _handleRadioValueChange,
-                  value: index,
+                Row(
+                  children: <Widget>[
+                    Radio(
+                      groupValue: _radioValue,
+                      onChanged: _handleRadioValueChange,
+                      value: index,
+                    ),
+                    Text(widget.feedModel.options[index].keys.single.toString()),
+                    
+                  ],
                 ),
-                Text(widget.feedModel.options[index].keys.single.toString()),
+                _showOptionPercentage ? _calculateOptionPercentage(index) : SizedBox()
               ],
             ),
           );
