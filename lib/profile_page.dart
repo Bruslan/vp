@@ -8,6 +8,7 @@ import 'package:vp/chat_page.dart';
 import 'package:vp/database_logic.dart';
 import 'package:vp/user_model.dart';
 import 'auth_class.dart';
+import "cupertione_actionsheet.dart";
 
 class ProfilePage extends StatelessWidget {
   final String targetUserId;
@@ -171,58 +172,78 @@ class ProfilePage extends StatelessWidget {
       );
     }
 
+    Widget buildProfileMenuCupertino() {
+      return Column(
+        children: <Widget>[
+          new CupertinoActionSheetAction(
+              child: new Text('Abmelden'), onPressed: _signOut),
+          new CupertinoActionSheetAction(
+              child: new Text('Change Profile Picture'),
+              onPressed: () async {
+                File imageFile = await ImagePicker.pickImage(
+                    source: ImageSource.gallery, maxHeight: 600, maxWidth: 600);
+
+                if (imageFile != null) {
+                  changeProfilePicture(imageFile);
+
+                  Navigator.of(context).pop();
+                }
+              }),
+        ],
+      );
+    }
+
     Widget _menuButton() {
       return Positioned(
         top: 10,
         right: 10,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              // margin: const EdgeInsets.all(3.0),
-              // padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: .5,
-                      spreadRadius: 1.0,
-                      color: Colors.black.withOpacity(.22))
-                ],
-                color: Color.fromARGB(150, 0, 0, 0),
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return new Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                buildProfileMenu(),
-                                new ListTile(
-                                  leading: new Icon(Icons.cancel),
-                                  title: new Text('Abbrechen'),
-                                  onTap: () => Navigator.pop(context),
-                                ),
-                                new ListTile(
-                                  leading: new Icon(Icons.cancel),
-                                  title: new Text('Abbrechen'),
-                                  onTap: () => Navigator.pop(context),
-                                ),
-                              ],
-                            );
-                          });
-                    },
-                    icon: Icon(Icons.settings),
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            )
-          ],
+        child: SafeArea(
+                  child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                // margin: const EdgeInsets.all(3.0),
+                // padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: .5,
+                        spreadRadius: 1.0,
+                        color: Colors.black.withOpacity(.22))
+                  ],
+                  color: Color.fromARGB(150, 0, 0, 0),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {
+                        containerForSheet<String>(
+                            context: context,
+                            child: CupertinoActionSheet(
+                                title: const Text('Was wollen Sie tun?'),
+                                // message: const Text('Your options are '),
+                                actions: <Widget>[
+                                  buildProfileMenuCupertino(),
+                                ],
+                                cancelButton: CupertinoActionSheetAction(
+                                  child: const Text('Cancel'),
+                                  isDefaultAction: true,
+                                  onPressed: () {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop("Discard");
+                                  },
+                                )));
+                        ;
+                      },
+                      icon: Icon(Icons.settings),
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       );
     }
@@ -232,50 +253,49 @@ class ProfilePage extends StatelessWidget {
         //   middle: Text("Profile"),
         // ),
         body: new CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              backgroundColor: Colors.white,
-              expandedHeight: 250.0,
-              // pinned: true,
-              flexibleSpace: new FlexibleSpaceBar(
-                background: Stack(
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: _buildProfileImage(),
-                    ),
-                    currentUser ? _menuButton() : Container(),
-                  ],
+      slivers: <Widget>[
+        SliverAppBar(
+          backgroundColor: Colors.white,
+          expandedHeight: 250.0,
+          // pinned: true,
+          flexibleSpace: new FlexibleSpaceBar(
+            background: Stack(
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: _buildProfileImage(),
                 ),
-              ),
+                currentUser ? _menuButton() : Container(),
+              ],
             ),
-            new SliverList(
-              delegate: new SliverChildBuilderDelegate(
-                  (context, index) => new Card(
-                          child: new Container(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+        ),
+        new SliverList(
+          delegate: new SliverChildBuilderDelegate(
+              (context, index) => new Card(
+                      child: new Container(
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            new Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                CircleAvatar(
-                                  backgroundColor: Colors.transparent,
-                                  backgroundImage:
-                                      new CachedNetworkImageProvider(
-                                          'http://i.pravatar.cc/40'),
-                                ),
-                                SizedBox(width: 15.0),
-                                Text('I am the card content!!')
-                              ],
+                            CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: new CachedNetworkImageProvider(
+                                  'http://i.pravatar.cc/40'),
                             ),
+                            SizedBox(width: 15.0),
+                            Text('I am the card content!!')
                           ],
                         ),
-                      )),
-                  childCount: 10),
-            )
-          ],
-        ));
+                      ],
+                    ),
+                  )),
+              childCount: 10),
+        )
+      ],
+    ));
   }
 }

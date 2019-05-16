@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vp/profile_page.dart';
 import 'package:vp/user_model.dart';
 import 'database_logic.dart';
+import 'cupertione_actionsheet.dart';
 
 class FeedModel {
   final String userName;
@@ -37,7 +38,7 @@ class FeedModel {
         imageUrls: json['imageUrls'] == null ? [] : json['imageUrls'],
         textContent: json['textContent'],
         userId: json['userId'],
-        options: json["options"],
+        options: json["options"] == null ? [] : json["options"],
         timestamp: json["timestamp"]);
   }
 
@@ -151,6 +152,29 @@ class _FeedFromModelState extends State<FeedFromModel> {
     }
   }
 
+  Widget buildDeleteOrReportCupertino() {
+    if (widget.currentUserID == widget.feedModel.userId) {
+      return new CupertinoActionSheetAction(
+        child: const Text('Delete'),
+        onPressed: () =>
+            removeDocument("feeds", widget.feedModel.postId).then((onValue) {
+              onDeleted();
+              Navigator.of(context, rootNavigator: true).pop("Discard");
+            }),
+      );
+    } else {
+      return new CupertinoActionSheetAction(
+          child: const Text('Melden'),
+          onPressed: () => reportFeed(
+                      "reports", widget.feedModel.postId, widget.currentUserID)
+                  .then((onValue) {
+                Navigator.of(context, rootNavigator: true).pop("Discard");
+              }));
+    }
+  }
+
+
+
   int _radioValue = -1;
 
   void _handleRadioValueChange(int value) {
@@ -239,27 +263,23 @@ class _FeedFromModelState extends State<FeedFromModel> {
       ),
       trailing: IconButton(
         onPressed: () {
-          incrementCounter("feeds", widget.feedModel.postId, true);
-          showModalBottomSheet<void>(
+          // incrementCounter("feeds", widget.feedModel.postId, true);
+          containerForSheet<String>(
               context: context,
-              builder: (BuildContext context) {
-                return new Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    buildDeleteOrReport(),
-                    new ListTile(
-                      leading: new Icon(Icons.cancel),
-                      title: new Text('Abbrechen'),
-                      onTap: () => Navigator.pop(context),
-                    ),
-                    new ListTile(
-                      leading: new Icon(Icons.cancel),
-                      title: new Text('Abbrechen'),
-                      onTap: () => Navigator.pop(context),
-                    ),
+              child: CupertinoActionSheet(
+                  title: const Text('Was wollen Sie tun?'),
+                  // message: const Text('Your options are '),
+                  actions: <Widget>[
+                    buildDeleteOrReportCupertino(),
                   ],
-                );
-              });
+                  cancelButton: CupertinoActionSheetAction(
+                    child: const Text('Cancel'),
+                    isDefaultAction: true,
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop("Discard");
+                    },
+                  ))
+              );
         },
         icon: Icon(Icons.more_horiz),
       ),

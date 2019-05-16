@@ -323,35 +323,7 @@ class _PostFormState extends State<PostForm> {
               ),
             ),
             _buildOptions(),
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    TextEditingController optionsController =
-                        new TextEditingController();
-                    widget.optionsControllers.add(optionsController);
-
-                    widget.optionsList.add(OptionPill(
-                      optionController: optionsController,
-                      optionNr: widget.optionsList.length + 1,
-                    ));
-                    setState(() {});
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.add),
-                      Text("Add Options"),
-                    ],
-                  ),
-                ),
-                FlatButton(
-                    onPressed: widget.onImagePressed,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[Icon(Icons.add), Text("Add a Photo")],
-                    )),
-              ],
-            )
+            _buildOptionButtons()
           ],
         ),
         new Divider(),
@@ -373,6 +345,38 @@ class _PostFormState extends State<PostForm> {
             ),
           ),
         )
+      ],
+    );
+  }
+
+  Row _buildOptionButtons() {
+    return Row(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () {
+            TextEditingController optionsController =
+                new TextEditingController();
+            widget.optionsControllers.add(optionsController);
+
+            widget.optionsList.add(OptionPill(
+              optionController: optionsController,
+              optionNr: widget.optionsList.length + 1,
+            ));
+            setState(() {});
+          },
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.add),
+              Text("Add Options"),
+            ],
+          ),
+        ),
+        FlatButton(
+            onPressed: widget.onImagePressed,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[Icon(Icons.add), Text("Add a Photo")],
+            )),
       ],
     );
   }
