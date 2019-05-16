@@ -109,7 +109,7 @@ class ChatPageState extends State<ChatPage> {
               new Container(
                 decoration:
                     new BoxDecoration(color: Theme.of(context).cardColor),
-                child: _buildTextComposer(),
+                child: SafeArea(child: _buildTextComposer()),
               ),
               new Builder(builder: (BuildContext context) {
                 _scaffoldContext = context;

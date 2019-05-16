@@ -288,7 +288,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   Widget buildTextContent() {
     return Padding(
-        padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+        padding: EdgeInsets.fromLTRB(20, 5, 10, 0),
         child: Text(
           widget.feedModel.textContent ?? "",
           textAlign: TextAlign.start,
@@ -310,7 +310,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
         buildFeedHeader(),
         buildLikeableImage(),
         widget.feedModel.textContent != null ? buildTextContent() : SizedBox(),
