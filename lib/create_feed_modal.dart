@@ -96,6 +96,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
                 onImagePressed: () {
                   _selectImage();
                 },
+                onCameraPressed: () {
+                  _takeAnImage();
+                },
                 imageFiles: imageFiles,
                 descriptionController: descriptionController,
                 locationController: locationController,
@@ -188,45 +191,16 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   }
 
   _selectImage() async {
-    return showDialog<Null>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
+    File imageFile = await ImagePicker.pickImage(
+        source: ImageSource.gallery, maxHeight: 1000, maxWidth: 1000);
 
-      builder: (BuildContext context) {
-        return new SimpleDialog(
-          title: const Text('Create a Post'),
-          children: <Widget>[
-            new SimpleDialogOption(
-                child: const Text('Take a photo'),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  File imageFile = await ImagePicker.pickImage(
-                      source: ImageSource.camera,
-                      maxHeight: 500,
-                      maxWidth: 500);
-                  _cropImage(imageFile);
-                }),
-            new SimpleDialogOption(
-                child: const Text('Choose from Gallery'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  File imageFile = await ImagePicker.pickImage(
-                      source: ImageSource.gallery,
-                      maxHeight: 1000,
-                      maxWidth: 1000);
+    _cropImage(imageFile);
+  }
 
-                  _cropImage(imageFile);
-                }),
-            new SimpleDialogOption(
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
+  _takeAnImage() async {
+    File imageFile = await ImagePicker.pickImage(
+        source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
+    _cropImage(imageFile);
   }
 
   void clearImage() {
@@ -280,6 +254,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
 
 class PostForm extends StatefulWidget {
   final PostFormCallback onImagePressed;
+  final PostFormCallback onCameraPressed;
   final List<Widget> optionsList;
   final imageFiles;
   final TextEditingController descriptionController;
@@ -288,7 +263,8 @@ class PostForm extends StatefulWidget {
   final bool loading;
 
   PostForm(
-      {this.optionsControllers,
+      {this.onCameraPressed,
+      this.optionsControllers,
       this.onImagePressed,
       this.optionsList,
       this.imageFiles,
@@ -351,6 +327,7 @@ class _PostFormState extends State<PostForm> {
 
   Row _buildOptionButtons() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         FlatButton(
           onPressed: () {
@@ -372,11 +349,8 @@ class _PostFormState extends State<PostForm> {
           ),
         ),
         FlatButton(
-            onPressed: widget.onImagePressed,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[Icon(Icons.add), Text("Add a Photo")],
-            )),
+            onPressed: widget.onCameraPressed, child: Icon(Icons.camera_alt)),
+        FlatButton(onPressed: widget.onImagePressed, child: Icon(Icons.image)),
       ],
     );
   }
