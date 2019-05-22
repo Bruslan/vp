@@ -81,7 +81,6 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   _FeedFromModelState(this.onDeleted);
 
-  bool _deleted = false;
   GestureDetector buildLikeableImage() {
     return new GestureDetector(
       child: new Stack(
@@ -134,13 +133,11 @@ class _FeedFromModelState extends State<FeedFromModel> {
       return new ListTile(
           leading: new Icon(Icons.delete),
           title: new Text('Löschen'),
-          onTap: () {
-            removeDocument("feeds", widget.feedModel.postId).then((onValue) {
-              onDeleted();
-
-              Navigator.pop(context);
-            });
-          });
+          onTap: () =>
+              removeDocument("feeds", widget.feedModel.postId).then((onValue) {
+                onDeleted();
+                Navigator.pop(context);
+              }));
     } else {
       return new ListTile(
           leading: new Icon(Icons.delete),
@@ -156,14 +153,14 @@ class _FeedFromModelState extends State<FeedFromModel> {
   Widget buildDeleteOrReportCupertino() {
     if (widget.currentUserID == widget.feedModel.userId) {
       return new CupertinoActionSheetAction(
-          child: const Text('Delete'),
-          onPressed: () {
+        child: const Text('Delete'),
+        onPressed: () =>
             removeDocument("feeds", widget.feedModel.postId).then((onValue) {
               onDeleted();
-
-              Navigator.of(context, rootNavigator: true).pop("Erfolgreich gelöscht");
-            });
-          });
+              Navigator.of(context, rootNavigator: true)
+                  .pop("Eintrag wurde gelöscht");
+            }),
+      );
     } else {
       return new CupertinoActionSheetAction(
           child: const Text('Melden'),

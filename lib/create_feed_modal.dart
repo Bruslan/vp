@@ -351,6 +351,7 @@ class _PostFormState extends State<PostForm> {
         FlatButton(
             onPressed: widget.onCameraPressed, child: Icon(Icons.camera_alt)),
         FlatButton(onPressed: widget.onImagePressed, child: Icon(Icons.image)),
+        // hier anonym Button
       ],
     );
   }
