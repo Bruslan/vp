@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vp/chat_message_model.dart';
+import 'comment_model.dart';
 import 'feed_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -87,6 +88,42 @@ Future<List<FeedModel>> getFeeds(int feedCount, String collection,
     });
   }
   return feeds;
+}
+
+Future<List<CommentModel>> getCommentsForFeed(String feedId) async {
+  List<CommentModel> comments = new List();
+  await _firestore
+      .collection("comments")
+      .document(feedId)
+      .collection("comments")
+      .getDocuments()
+      .then((snapshot) {
+    snapshot.documents.forEach((document) {
+      comments.add(CommentModel.fromDocument(document));
+    });
+  }).catchError((error) {
+    print(error);
+  });
+
+  return comments;
+}
+
+Future<void> _incrementCommentCount(String feedId) async {
+  await _firestore
+      .collection("feeds")
+      .document(feedId)
+      .updateData({"commentCount": FieldValue.increment(1)});
+}
+
+Future<void> createCommentForFeed(String feedId, CommentModel comment) async {
+  return _firestore
+      .collection("comments")
+      .document(feedId)
+      .collection("comments")
+      .document()
+      .setData(comment.toJson()).then((_){
+        _incrementCommentCount(feedId);
+      });
 }
 
 Future<User> getUserProfile(String userId) async {
@@ -198,8 +235,4 @@ incrementCounter(String collection, String documentID, bool increment) {
       .collection(collection)
       .document(documentID)
       .updateData({"options": FieldValue.increment(increment ? 1 : -1)});
-
-
 }
-
-

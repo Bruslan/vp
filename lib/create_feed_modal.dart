@@ -24,6 +24,8 @@ class CreateFeedModal extends StatefulWidget {
 class _CreateFeedModal extends State<CreateFeedModal> {
   File file;
   List<File> imageFiles = [];
+  bool tagIndicator = false;
+
   //Strings required to save address
 
   Map<String, double> currentLocation = new Map();
@@ -84,11 +86,20 @@ class _CreateFeedModal extends State<CreateFeedModal> {
           child: new ListView(
             children: <Widget>[
               //  Hier komm ein TagPill rein
-              TagPills(
-                tags: tagsMap,
-                onTagsSet: (tags) {
-                  tagsMap = tags;
-                },
+              Container(
+                decoration: tagIndicator
+                    ? BoxDecoration(
+                        border: Border.all(width: 0.5, color: Colors.red))
+                    : null,
+                child: TagPills(
+                  tags: tagsMap,
+                  onTagsSet: (tags) {
+                    tagsMap = tags;
+                    setState(() {
+                      tagIndicator = false;
+                    });
+                  },
+                ),
               ),
               new PostForm(
                 optionsControllers: optionsControllers,
@@ -193,8 +204,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   _selectImage() async {
     File imageFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 1000, maxWidth: 1000);
-
-    _cropImage(imageFile);
+    if (imageFile != null) {
+      _cropImage(imageFile);
+    }
   }
 
   _takeAnImage() async {
@@ -219,6 +231,12 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         return;
       }
     });
+
+    if (tagFilter == "") {
+      setState(() {
+        tagIndicator = true;
+      });
+    }
 
     if (imageFiles.length != 0 && tagFilter != "") {
       posting = true;

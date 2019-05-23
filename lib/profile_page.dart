@@ -10,15 +10,24 @@ import 'package:vp/user_model.dart';
 import 'auth_class.dart';
 import "cupertione_actionsheet.dart";
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final String targetUserId;
   final bool currentUser;
   const ProfilePage({Key key, this.targetUserId, @required this.currentUser})
       : super(key: key);
 
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   void changeProfilePicture(File imageFile) async {
     uploadImage(imageFile).then((downLoadUrl) {
-      updateProfilePicture(targetUserId, downLoadUrl);
+      updateProfilePicture(widget.targetUserId, downLoadUrl).then((_){
+        setState(() {
+          
+        });
+      });
     });
   }
 
@@ -37,7 +46,7 @@ class ProfilePage extends StatelessWidget {
       return IconButton(
         onPressed: () {
           Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) => ChatPage(targetUserID: targetUserId),
+            builder: (context) => ChatPage(targetUserID: widget.targetUserId),
           ));
         },
         icon: Icon(
@@ -49,7 +58,7 @@ class ProfilePage extends StatelessWidget {
 
     Widget _buildProfileImage() {
       return FutureBuilder(
-        future: getUserProfile(targetUserId),
+        future: getUserProfile(widget.targetUserId),
         builder: (BuildContext context, AsyncSnapshot<User> user) {
           if (user.hasData) {
             if (user.data != null) {
@@ -90,7 +99,7 @@ class ProfilePage extends StatelessWidget {
                                   user.data.userName,
                                   style: TextStyle(color: Colors.white),
                                 ),
-                                currentUser == true
+                                widget.currentUser == true
                                     ? Container()
                                     : _buildSentButton()
                               ],
@@ -186,7 +195,7 @@ class ProfilePage extends StatelessWidget {
                 if (imageFile != null) {
                   changeProfilePicture(imageFile);
 
-                  Navigator.of(context).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
                 }
               }),
         ],
@@ -198,7 +207,7 @@ class ProfilePage extends StatelessWidget {
         top: 10,
         right: 10,
         child: SafeArea(
-                  child: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
@@ -265,7 +274,7 @@ class ProfilePage extends StatelessWidget {
                   width: MediaQuery.of(context).size.width,
                   child: _buildProfileImage(),
                 ),
-                currentUser ? _menuButton() : Container(),
+                widget.currentUser ? _menuButton() : Container(),
               ],
             ),
           ),

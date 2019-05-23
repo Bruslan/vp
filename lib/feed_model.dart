@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vp/profile_page.dart';
 import 'package:vp/user_model.dart';
+import 'comment_page.dart';
 import 'database_logic.dart';
 import 'cupertione_actionsheet.dart';
 
@@ -17,9 +18,11 @@ class FeedModel {
   final String postId;
   final String timestamp;
   final List<dynamic> options;
+  final int commentCount;
 
   FeedModel(
-      {this.options,
+      {this.commentCount,
+      this.options,
       this.userName,
       this.textContent,
       this.imageUrls,
@@ -32,6 +35,7 @@ class FeedModel {
   factory FeedModel.fromJson(Map<String, dynamic> json) {
     return FeedModel(
         postId: json["postId"],
+        commentCount: json["commentCount"],
         location: json["location"],
         tag: json["tag"],
         userName: json['userName'],
@@ -48,6 +52,7 @@ class FeedModel {
 
   Map<String, Object> toJson() {
     return {
+      "commentCount": commentCount,
       'userName': userName,
       'imageUrls': imageUrls,
       'textContent': textContent,
@@ -78,10 +83,9 @@ class FeedFromModel extends StatefulWidget {
 
 class _FeedFromModelState extends State<FeedFromModel> {
   final FeedCallback onDeleted;
+  User currentUserModel;
 
   _FeedFromModelState(this.onDeleted);
-
-  bool _deleted = false;
   GestureDetector buildLikeableImage() {
     return new GestureDetector(
       child: new Stack(
@@ -161,7 +165,8 @@ class _FeedFromModelState extends State<FeedFromModel> {
             removeDocument("feeds", widget.feedModel.postId).then((onValue) {
               onDeleted();
 
-              Navigator.of(context, rootNavigator: true).pop("Erfolgreich gelöscht");
+              Navigator.of(context, rootNavigator: true)
+                  .pop("Erfolgreich gelöscht");
             });
           });
     } else {
@@ -246,6 +251,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
           builder: (BuildContext context, AsyncSnapshot<User> user) {
             if (user.hasData) {
               if (user.data != null) {
+                currentUserModel = user.data;
                 if (user.data.profileImageUrl != "") {
                   return CircleAvatar(
                     backgroundImage:
@@ -311,6 +317,37 @@ class _FeedFromModelState extends State<FeedFromModel> {
         ));
   }
 
+  Widget _buildActionButtons() {
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true)
+                  .push(CupertinoPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => CommentsPage(
+                            currentUserId: widget.currentUserID,
+                            feedId: widget.feedModel.postId,
+                          )));
+            },
+            child: widget.feedModel.commentCount == null ? Text("Kommentieren") :Row(
+              children: <Widget>[
+                Text("Alle "),
+                Text(widget.feedModel.commentCount.toString(), style: TextStyle(color: Colors.blue),),
+                Text(
+                  " Kommentare anzeigen",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   User feedUser;
   @override
   void initState() {
@@ -336,6 +373,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
                 ? buildTextContent()
                 : SizedBox(),
             _buildOptions(),
+            _buildActionButtons(),
           ]),
     );
   }
