@@ -41,6 +41,32 @@ Future<void> uploadFeed(FeedModel feed, DocumentReference reference) async {
   });
 }
 
+Future<void> uploadOptionsForFeed(
+    String feedId, Map<String, dynamic> options) async {
+  _firestore
+      .collection("options")
+      .document(feedId)
+      .setData(options)
+      .catchError((error) {
+    print("error beim uploaden der Options");
+  });
+}
+
+Future<DocumentSnapshot> getOptionsForFeed(String feedId) async {
+  DocumentSnapshot options;
+  await _firestore
+      .collection("options")
+      .document(feedId)
+      .get()
+      .then((documentSnapshot) {
+    options = documentSnapshot;
+  }).catchError((error) {
+    print(error);
+  });
+
+  return options;
+}
+
 Future<void> createUser(User user) async {
   DocumentReference reference = _firestore.collection("users").document();
 
@@ -121,9 +147,10 @@ Future<void> createCommentForFeed(String feedId, CommentModel comment) async {
       .document(feedId)
       .collection("comments")
       .document()
-      .setData(comment.toJson()).then((_){
-        _incrementCommentCount(feedId);
-      });
+      .setData(comment.toJson())
+      .then((_) {
+    _incrementCommentCount(feedId);
+  });
 }
 
 Future<User> getUserProfile(String userId) async {

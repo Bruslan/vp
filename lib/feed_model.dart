@@ -7,6 +7,7 @@ import 'package:vp/user_model.dart';
 import 'comment_page.dart';
 import 'database_logic.dart';
 import 'cupertione_actionsheet.dart';
+import 'options_model.dart';
 
 class FeedModel {
   final String userName;
@@ -17,12 +18,12 @@ class FeedModel {
   final String location;
   final String postId;
   final String timestamp;
-  final List<dynamic> options;
+  final bool hasOptions;
   final int commentCount;
 
   FeedModel(
       {this.commentCount,
-      this.options,
+      this.hasOptions,
       this.userName,
       this.textContent,
       this.imageUrls,
@@ -42,7 +43,7 @@ class FeedModel {
         imageUrls: json['imageUrls'] == null ? [] : json['imageUrls'],
         textContent: json['textContent'],
         userId: json['userId'],
-        options: json["options"] == null ? [] : json["options"],
+        hasOptions: json["hasOptions"],
         timestamp: json["timestamp"]);
   }
 
@@ -61,7 +62,7 @@ class FeedModel {
       "location": location,
       "postId": postId,
       "timestamp": timestamp,
-      "options": options
+      "hasOptions": hasOptions
     };
   }
 }
@@ -181,60 +182,6 @@ class _FeedFromModelState extends State<FeedFromModel> {
     }
   }
 
-  int _radioValue = -1;
-  bool _showOptionPercentage = false;
-
-  void _handleRadioValueChange(int value) {
-    setState(() {
-      _radioValue = value;
-      _showOptionPercentage = true;
-
-      print(_radioValue);
-    });
-  }
-
-  Widget _calculateOptionPercentage(int index) {
-    final testMap = [90, 10, 80, 22];
-
-    return Text(testMap[index].toString() + "%");
-  }
-
-  _buildOptions() {
-    return Container(
-      height: widget.feedModel.options.length.toDouble() * 50,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: widget.feedModel.options.length,
-        itemBuilder: (BuildContext context, int index) {
-          return FlatButton(
-            onPressed: () {
-              _handleRadioValueChange(index);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Radio(
-                      groupValue: _radioValue,
-                      onChanged: _handleRadioValueChange,
-                      value: index,
-                    ),
-                    Text(
-                        widget.feedModel.options[index].keys.single.toString()),
-                  ],
-                ),
-                _showOptionPercentage
-                    ? _calculateOptionPercentage(index)
-                    : SizedBox()
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   ListTile buildFeedHeader() {
     return new ListTile(
       leading: GestureDetector(
@@ -332,20 +279,35 @@ class _FeedFromModelState extends State<FeedFromModel> {
                             feedId: widget.feedModel.postId,
                           )));
             },
-            child: widget.feedModel.commentCount == null ? Text("Kommentieren", style: TextStyle(color: Colors.grey),) :Row(
-              children: <Widget>[
-                Text("Alle ", style: TextStyle(color: Colors.grey),),
-                Text(widget.feedModel.commentCount.toString(), style: TextStyle(color: Colors.blue),),
-                Text(
-                  " Kommentare anzeigen",
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
+            child: widget.feedModel.commentCount == null
+                ? Text(
+                    "Kommentieren",
+                    style: TextStyle(color: Colors.grey),
+                  )
+                : Row(
+                    children: <Widget>[
+                      Text(
+                        "Alle ",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        widget.feedModel.commentCount.toString(),
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      Text(
+                        " Kommentare anzeigen",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
           ),
         )
       ],
     );
+  }
+
+  _buildOptions() {
+    return Options(feedId: widget.feedModel.postId);
   }
 
   User feedUser;
@@ -372,7 +334,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
             widget.feedModel.textContent != null
                 ? buildTextContent()
                 : SizedBox(),
-            _buildOptions(),
+            widget.feedModel.hasOptions ? _buildOptions() : SizedBox(),
             _buildActionButtons(),
           ]),
     );

@@ -168,15 +168,15 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     final Firestore _firestore = Firestore.instance;
     DocumentReference reference = _firestore.collection("feeds").document();
 
-    List<Map<String, dynamic>> options = [];
+    Map<String, dynamic> options = new Map();
     optionsControllers.forEach((f) {
       if (f.text != "") {
-        options.add({f.text: 0});
+        options[f.text]=0;
       }
     });
 
     FeedModel feed = new FeedModel(
-        options: options,
+        hasOptions: options.length != 0,
         userName: currentUser.userName,
         userId: currentUserFirebase.uid,
         imageUrls: imageUrls,
@@ -186,6 +186,9 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         postId: reference.documentID);
 
     uploadFeed(feed, reference);
+    if (options.length != 0){
+      uploadOptionsForFeed(reference.documentID,options);
+    }
   }
 
   Future<Null> _cropImage(File imageFile) async {
