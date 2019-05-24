@@ -7,11 +7,11 @@ class CommentModel {
   final String userId;
   final String postId;
   final String timestamp;
-  final List<dynamic> options;
+  final String imageProfileUrl;
 
   CommentModel(
       {this.imageUrl,
-      this.options,
+      this.imageProfileUrl,
       this.userName,
       this.textContent,
       this.userId,
@@ -25,7 +25,7 @@ class CommentModel {
         imageUrl: json['imageUrls'],
         textContent: json['textContent'],
         userId: json['userId'],
-        options: json["options"] == null ? [] : json["options"],
+        imageProfileUrl: json["imageProfileUrl"],
         timestamp: json["timestamp"]);
   }
 
@@ -41,7 +41,7 @@ class CommentModel {
       "userId": userId,
       "postId": postId,
       "timestamp": timestamp,
-      "options": options
+      "imageProfileUrl": imageProfileUrl
     };
   }
 }

@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vp/comment_model.dart';
 import 'package:vp/database_logic.dart';
+import 'package:vp/profile_page.dart';
 import 'package:vp/user_model.dart';
 
 class CommentsPage extends StatefulWidget {
@@ -60,12 +62,49 @@ class _CommentsPageState extends State<CommentsPage> {
         ));
   }
 
+  _buildProfileImage(int index) {
+    if (commentsList[index].imageProfileUrl != null) {
+      return CircleAvatar(
+        backgroundImage:
+            CachedNetworkImageProvider(commentsList[index].imageProfileUrl),
+        backgroundColor: Colors.grey,
+      );
+    } else {
+      return new CircleAvatar(
+        backgroundImage: ExactAssetImage("images/anonym.png"),
+        backgroundColor: Colors.grey,
+      );
+    }
+  }
+
   _buildListView() {
     return ListView.builder(
       itemCount: commentsList.length,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          title: Text(commentsList[index].userName),
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true)
+                  .push(CupertinoPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => ProfilePage(
+                            currentUser: false,
+                            targetUserId: commentsList[index].userId,
+                          )));
+            },
+            child: _buildProfileImage(index),
+          ),
+          title: GestureDetector(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true)
+                    .push(CupertinoPageRoute(
+                        fullscreenDialog: true,
+                        builder: (context) => ProfilePage(
+                              currentUser: false,
+                              targetUserId: commentsList[index].userId,
+                            )));
+              },
+              child: Text(commentsList[index].userName)),
           subtitle: Text(commentsList[index].textContent),
         );
       },
@@ -152,7 +191,7 @@ class _CommentsPageState extends State<CommentsPage> {
       imageUrl: imageUrl,
       userId: widget.currentUserId,
       userName: currentUser.userName,
-      
+      imageProfileUrl: currentUser.profileImageUrl,
       textContent: messageText,
       timestamp: (DateTime.now().toString()),
     );

@@ -332,9 +332,9 @@ class _FeedFromModelState extends State<FeedFromModel> {
                             feedId: widget.feedModel.postId,
                           )));
             },
-            child: widget.feedModel.commentCount == null ? Text("Kommentieren") :Row(
+            child: widget.feedModel.commentCount == null ? Text("Kommentieren", style: TextStyle(color: Colors.grey),) :Row(
               children: <Widget>[
-                Text("Alle "),
+                Text("Alle ", style: TextStyle(color: Colors.grey),),
                 Text(widget.feedModel.commentCount.toString(), style: TextStyle(color: Colors.blue),),
                 Text(
                   " Kommentare anzeigen",
