@@ -63,7 +63,8 @@ class FeedModel {
 
 class Options extends StatefulWidget {
   final String feedId;
-  Options({Key key, this.feedId}) : super(key: key);
+  final String currentUser;
+  Options({Key key, this.feedId, this.currentUser}) : super(key: key);
 
   _OptionsState createState() => _OptionsState();
 }
@@ -79,7 +80,6 @@ class _OptionsState extends State<Options> {
           Map<String, dynamic> options = new Map();
           if (snapshot.hasData) {
             if (snapshot.data != null) {
-              print(snapshot.data.data);
               options = snapshot.data.data;
               return _buildOptions(options);
             }
@@ -94,19 +94,36 @@ class _OptionsState extends State<Options> {
   int _radioValue = -1;
   bool _showOptionPercentage = false;
 
-  void _handleRadioValueChange(int value) {
-    setState(() {
-      _radioValue = value;
-      _showOptionPercentage = true;
+  void _handleRadioValueChange(
+      int value, String votedOption, String currentVote) {
+    _showOptionPercentage = true;
 
-      print(_radioValue);
-    });
+//     if (votedOption == currentVote) {
+//       // remove the vote
+//       decrementoptionVote(widget.feedId, votedOption).then((_) {
+//         userhasDeletedVote(widget.feedId, widget.currentUser, votedOption);
+//       });
+//     } else if (currentVote == "") {
+//       // ganz einfaches Increment
+//       incrementOptionVote(widget.feedId, votedOption).then((_) {
+//         userhasVoted(widget.feedId, widget.currentUser, votedOption);
+//       });
+//     } else if (currentVote != "") {
+// // increment auf current Vote löschen und auf votedOption stellen
+//       decrementoptionVote(widget.feedId, currentVote);
+//       incrementOptionVote(widget.feedId, votedOption).then((_) {
+//         userhasVoted(widget.feedId, widget.currentUser, votedOption);
+//       });
+//     }
+//     setState(() {
+      
+//     });
   }
 
-  Widget _calculateOptionPercentage(int index) {
-    final testMap = [90, 10, 80, 22];
+  Widget _calculateOptionPercentage(int index, int votingCount) {
+    // final testMap = [90, 10, 80, 22];
 
-    return Text(testMap[index].toString() + "%");
+    return Text(votingCount.toString());
   }
 
   _buildOptions(Map<String, dynamic> options) {
@@ -114,37 +131,56 @@ class _OptionsState extends State<Options> {
     options.forEach((key, value) {
       optionsList.add(key);
     });
-    return Container(
-      height: options.length.toDouble() * 50,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: options.length,
-        itemBuilder: (BuildContext context, int index) {
-          return FlatButton(
-            onPressed: () {
-              _handleRadioValueChange(index);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Radio(
-                      groupValue: _radioValue,
-                      onChanged: _handleRadioValueChange,
-                      value: index,
-                    ),
-                    Text(optionsList[index]),
-                  ],
-                ),
-                _showOptionPercentage
-                    ? _calculateOptionPercentage(index)
-                    : SizedBox()
-              ],
+    return FutureBuilder(
+      future: userHasVotedThisOption(widget.feedId, widget.currentUser),
+      builder: (BuildContext context, AsyncSnapshot option) {
+        if (option.hasData) {
+          if (option.data != "") {
+            _radioValue = optionsList.indexOf(option.data);
+            _showOptionPercentage = true;
+          }
+
+          return Container(
+            height: options.length.toDouble() * 50,
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: options.length,
+              itemBuilder: (BuildContext context, int index) {
+                return FlatButton(
+                  onPressed: () {
+                    _handleRadioValueChange(
+                        index, optionsList[index], option.data);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Radio(
+                            groupValue: _radioValue,
+                            onChanged: (_) {
+                              _handleRadioValueChange(
+                                  index, optionsList[index], option.data);
+                            },
+                            value: index,
+                          ),
+                          Text(optionsList[index]),
+                        ],
+                      ),
+                      _showOptionPercentage
+                          ? _calculateOptionPercentage(
+                              index, options[optionsList[index]])
+                          : SizedBox()
+                    ],
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
     );
   }
 }

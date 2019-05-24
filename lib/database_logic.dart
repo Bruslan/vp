@@ -52,6 +52,65 @@ Future<void> uploadOptionsForFeed(
   });
 }
 
+Future <void> userhasVoted(String feedId, String userId, String optionKey) async{
+    await _firestore
+      .collection("options")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .setData({userId: optionKey});
+}
+
+Future <void> userhasDeletedVote(String feedId, String userId, String optionKey) async{
+    await _firestore
+      .collection("options")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .delete();
+}
+Future<String> userHasVotedThisOption(String feedId, String userId)async{
+
+  String votedOption = "";
+
+       await _firestore .collection("options")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .get()
+      .then((snapshot){
+       
+        if (snapshot!= null){
+         
+            if (snapshot.data != null){
+                votedOption = snapshot.data[userId];
+            }else{
+              votedOption="";
+            }
+           
+
+        }
+      }).catchError((onError){
+        print(onError);
+      });
+
+      return votedOption;
+  
+}
+
+Future<void> incrementOptionVote(String feedId, String optionKey) async {
+  await _firestore
+      .collection("options")
+      .document(feedId)
+      .updateData({optionKey: FieldValue.increment(1)});
+}
+Future<void> decrementoptionVote(String feedId, String optionKey) async {
+  await _firestore
+      .collection("options")
+      .document(feedId)
+      .updateData({optionKey: FieldValue.increment(-1)});
+}
+
 Future<DocumentSnapshot> getOptionsForFeed(String feedId) async {
   DocumentSnapshot options;
   await _firestore
@@ -255,11 +314,4 @@ saveConversation(String receiverID, String message, String senderID,
       'conversationId': conversationID
     });
   });
-}
-
-incrementCounter(String collection, String documentID, bool increment) {
-  _firestore
-      .collection(collection)
-      .document(documentID)
-      .updateData({"options": FieldValue.increment(increment ? 1 : -1)});
 }

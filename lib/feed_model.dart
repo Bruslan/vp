@@ -307,7 +307,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
   }
 
   _buildOptions() {
-    return Options(feedId: widget.feedModel.postId);
+    return Options(feedId: widget.feedModel.postId, currentUser: widget.currentUserID,);
   }
 
   User feedUser;
