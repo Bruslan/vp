@@ -268,7 +268,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
     return Row(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.only(left: 10),
+          padding: const EdgeInsets.all(10),
           child: GestureDetector(
             onTap: () {
               Navigator.of(context, rootNavigator: true)

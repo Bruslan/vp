@@ -196,8 +196,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       sourcePath: imageFile.path,
       ratioX: 1.0,
       ratioY: 1.0,
-      maxWidth: 400,
-      maxHeight: 400,
+      maxWidth: 700,
+      maxHeight: 700,
     );
     setState(() {
       imageFiles.add(croppedFile);
@@ -214,7 +214,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
 
   _takeAnImage() async {
     File imageFile = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 500, maxWidth: 500);
+        source: ImageSource.camera, maxHeight: 700, maxWidth: 700);
     _cropImage(imageFile);
   }
 

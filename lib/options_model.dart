@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +86,9 @@ class _OptionsState extends State<Options> {
               return _buildOptions(options);
             }
           } else {
-            return CircularProgressIndicator();
+            return SizedBox(
+            height: options.length.toDouble() * 50,
+          );
           }
         },
       ),
@@ -97,6 +101,9 @@ class _OptionsState extends State<Options> {
   void _handleRadioValueChange(
       int value, String votedOption, String currentVote) {
     _showOptionPercentage = true;
+    setState(() {
+      _radioValue = value;
+    });
 
 //     if (votedOption == currentVote) {
 //       // remove the vote
@@ -116,7 +123,7 @@ class _OptionsState extends State<Options> {
 //       });
 //     }
 //     setState(() {
-      
+
 //     });
   }
 
@@ -178,7 +185,9 @@ class _OptionsState extends State<Options> {
             ),
           );
         } else {
-          return CircularProgressIndicator();
+          return SizedBox(
+            height: options.length.toDouble() * 50,
+          );
         }
       },
     );
