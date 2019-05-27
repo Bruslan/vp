@@ -273,7 +273,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
             onTap: () {
               Navigator.of(context, rootNavigator: true)
                   .push(CupertinoPageRoute(
-                      fullscreenDialog: true,
+                     
                       builder: (context) => CommentsPage(
                             currentUserId: widget.currentUserID,
                             feedId: widget.feedModel.postId,
