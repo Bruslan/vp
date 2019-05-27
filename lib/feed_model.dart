@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +145,8 @@ class _FeedFromModelState extends State<FeedFromModel> {
             removeDocument("feeds", widget.feedModel.postId).then((onValue) {
               onDeleted();
 
-              Navigator.pop(context);
+              Navigator.of(context, nullOk: true, rootNavigator: true)
+                  .pop(context);
             });
           });
     } else {
@@ -153,9 +156,23 @@ class _FeedFromModelState extends State<FeedFromModel> {
           onTap: () => reportFeed(
                       "reports", widget.feedModel.postId, widget.currentUserID)
                   .then((onValue) {
-                Navigator.pop(context);
+                Navigator.of(context, nullOk: true, rootNavigator: true)
+                    .pop(context);
               }));
     }
+  }
+
+  openBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[buildDeleteOrReport()],
+            ),
+          );
+        });
   }
 
   Widget buildDeleteOrReportCupertino() {
@@ -234,21 +251,24 @@ class _FeedFromModelState extends State<FeedFromModel> {
       ),
       trailing: IconButton(
         onPressed: () {
-          containerForSheet<String>(
-              context: context,
-              child: CupertinoActionSheet(
-                  title: const Text('Was wollen Sie tun?'),
-                  // message: const Text('Your options are '),
-                  actions: <Widget>[
-                    buildDeleteOrReportCupertino(),
-                  ],
-                  cancelButton: CupertinoActionSheetAction(
-                    child: const Text('Cancel'),
-                    isDefaultAction: true,
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop("Discard");
-                    },
-                  )));
+          Platform.isIOS
+              ? containerForSheet<String>(
+                  context: context,
+                  child: CupertinoActionSheet(
+                      title: const Text('Was wollen Sie tun?'),
+                      // message: const Text('Your options are '),
+                      actions: <Widget>[
+                        buildDeleteOrReportCupertino(),
+                      ],
+                      cancelButton: CupertinoActionSheetAction(
+                        child: const Text('Cancel'),
+                        isDefaultAction: true,
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true)
+                              .pop("Discard");
+                        },
+                      )))
+              : openBottomSheet(context);
         },
         icon: Icon(Icons.more_horiz),
       ),
@@ -273,7 +293,6 @@ class _FeedFromModelState extends State<FeedFromModel> {
             onTap: () {
               Navigator.of(context, rootNavigator: true)
                   .push(CupertinoPageRoute(
-                     
                       builder: (context) => CommentsPage(
                             currentUserId: widget.currentUserID,
                             feedId: widget.feedModel.postId,
@@ -307,7 +326,10 @@ class _FeedFromModelState extends State<FeedFromModel> {
   }
 
   _buildOptions() {
-    return Options(feedId: widget.feedModel.postId, currentUser: widget.currentUserID,);
+    return Options(
+      feedId: widget.feedModel.postId,
+      currentUser: widget.currentUserID,
+    );
   }
 
   User feedUser;
