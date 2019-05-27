@@ -49,6 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       inputType: TextInputType.emailAddress,
       validator: Validator.validateEmail,
     );
+
     _passwordField = CustomTextField(
       baseColor: Colors.grey,
       borderColor: Colors.grey[400],
@@ -57,6 +58,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
       obscureText: true,
       hint: "Password",
       validator: Validator.validatePassword,
+    );
+  }
+
+  _singUpButton(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      width: MediaQuery.of(context).size.width,
+      child: RaisedButton(
+        color: Colors.lightBlue,
+        onPressed: () {
+          _signUp(
+              fullname: _fullname.text,
+              email: _email.text,
+              number: _number.text,
+              password: _password.text);
+        },
+        child: Text(
+          "Sign Up",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -78,9 +100,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Text(
                         "Create new account",
                         softWrap: true,
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color.fromRGBO(212, 20, 15, 1.0),
+                          color: Colors.grey,
                           decoration: TextDecoration.none,
                           fontSize: 24.0,
                           fontWeight: FontWeight.w700,
@@ -105,24 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 25.0, horizontal: 40.0),
-                      child: CustomFlatButton(
-                        title: "Sign Up",
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        textColor: Colors.white,
-                        onPressed: () {
-                          _signUp(
-                              fullname: _fullname.text,
-                              email: _email.text,
-                              number: _number.text,
-                              password: _password.text);
-                        },
-                        splashColor: Colors.black12,
-                        borderColor: Color.fromRGBO(59, 89, 152, 1.0),
-                        borderWidth: 0,
-                        color: Color.fromRGBO(59, 89, 152, 1.0),
-                      ),
+                          vertical: 25.0, horizontal: 15.0),
+                      child: _singUpButton(context),
                     ),
                   ],
                 ),

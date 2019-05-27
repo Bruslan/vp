@@ -34,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     _signOut() async {
+       Navigator.of(context, rootNavigator: true).pop();
       try {
         await Auth().signOut();
         Navigator.of(context).pop();
