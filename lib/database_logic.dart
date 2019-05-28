@@ -146,8 +146,7 @@ Future<void> userHasVotedFeed(String feedId, String userId, int voteKey) async {
       .setData({userId: voteKey});
 }
 
-Future<void> deleteUserVoteForFeed(
-    String feedId, String userId) async {
+Future<void> deleteUserVoteForFeed(String feedId, String userId) async {
   await _firestore
       .collection("votes")
       .document(feedId)
@@ -155,6 +154,8 @@ Future<void> deleteUserVoteForFeed(
       .document(userId)
       .delete();
 }
+
+
 
 Future<void> incrementFeedVote(String feedId, String voteString) async {
   await _firestore
