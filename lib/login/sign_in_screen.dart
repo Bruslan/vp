@@ -110,7 +110,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: _singUpButton(context),
                     ),
                     FlatButton(
-                      child: Text("Create Account"),
+                      child: Text("Create Account", style: TextStyle(color: Colors.blue),),
                       // textColor: Colors.white,
                       onPressed: () {
                         Navigator.of(context).pushNamed("/signup");

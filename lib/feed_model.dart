@@ -180,22 +180,21 @@ class _FeedFromModelState extends State<FeedFromModel> {
       return new CupertinoActionSheetAction(
           child: const Text('Delete'),
           onPressed: () {
+            Navigator.of(context, rootNavigator: true)
+                .pop("Erfolgreich gelöscht");
             removeDocument("feeds", widget.feedModel.postId).then((onValue) {
               onDeleted();
-
-              Navigator.of(context, rootNavigator: true)
-                  .pop("Erfolgreich gelöscht");
             });
           });
     } else {
       return new CupertinoActionSheetAction(
           child: const Text('Melden'),
-          onPressed: () => reportFeed(
-                      "reports", widget.feedModel.postId, widget.currentUserID)
-                  .then((onValue) {
-                Navigator.of(context, rootNavigator: true)
-                    .pop("Danke für das Melde");
-              }));
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true)
+                .pop("Danke für das Melde");
+            reportFeed(
+                "reports", widget.feedModel.postId, widget.currentUserID);
+          });
     }
   }
 

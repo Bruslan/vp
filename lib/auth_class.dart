@@ -31,6 +31,8 @@ class Auth implements BaseAuth {
   static void addUser(User user) async {
     checkUserExist(user.userId).then((value) {
       if (!value) {
+
+       
         print("user ${user.userName} ${user.userName} added");
         Firestore.instance
             .document("users/${user.userId}")
@@ -80,7 +82,11 @@ class Auth implements BaseAuth {
     }
   }
 
+
+
   Future<String> signUp(String email, String password) async {
+     // check if username Exists
+
     FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     return user.uid;

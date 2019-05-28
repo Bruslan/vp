@@ -1,6 +1,7 @@
 import 'dart:core';
 import "package:flutter/material.dart";
 import 'package:vp/auth_class.dart';
+import '../database_logic.dart';
 import 'custom_text_field.dart';
 import 'validator.dart';
 import 'package:flutter/services.dart';
@@ -179,11 +180,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
         print("hallo");
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         _changeBlackVisible();
-        await Auth().signUp(email, password).then((uID) {
-          Auth.addUser(
-              new User(userId: uID, userName: fullname, profileImageUrl: ''));
-          onBackPress();
-        });
+
+        bool userNameTaken = await checkUserNameExists(fullname);
+        print("bool ist:");
+        print(userNameTaken);
+        if (!userNameTaken) {
+          await Auth().signUp(email, password).then((uID) {
+            Auth.addUser(
+                new User(userId: uID, userName: fullname, profileImageUrl: ''));
+            onBackPress();
+          });
+        }
+        else{
+                  _showErrorAlert(
+          title: "Username taken",
+          content: "Username is not available",
+          onPressed: _changeBlackVisible,
+        );
+        }
       } catch (e) {
         print("Error in sign up: $e");
         String exception = Auth.getExceptionText(e);
@@ -193,9 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           onPressed: _changeBlackVisible,
         );
       }
-    }else{
-      
-    }
+    } else {}
   }
 
   void _showErrorAlert({String title, String content, VoidCallback onPressed}) {

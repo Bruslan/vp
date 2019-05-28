@@ -10,6 +10,25 @@ import 'user_model.dart';
 
 final Firestore _firestore = Firestore.instance;
 
+Future<bool> checkUserNameExists(String username) async {
+  bool exists = false;
+
+  await _firestore
+      .collection("users")
+      .where("userName", isEqualTo: username)
+      .getDocuments()
+      .then((onValue) {
+      print("es existiert ...");
+    print(onValue.documents.length);
+    if (onValue.documents.length > 0) {
+      exists = true;
+    }else{
+      exists = false;
+    }
+  });
+  return exists;
+}
+
 Future<String> uploadImage(File imageFile) async {
   var uuid = new Uuid().v1();
   StorageReference ref = FirebaseStorage.instance.ref().child("post_$uuid.jpg");
@@ -52,8 +71,9 @@ Future<void> uploadOptionsForFeed(
   });
 }
 
-Future <void> userhasVoted(String feedId, String userId, String optionKey) async{
-    await _firestore
+Future<void> userhasVoted(
+    String feedId, String userId, String optionKey) async {
+  await _firestore
       .collection("options")
       .document(feedId)
       .collection("voters")
@@ -61,41 +81,38 @@ Future <void> userhasVoted(String feedId, String userId, String optionKey) async
       .setData({userId: optionKey});
 }
 
-Future <void> userhasDeletedVote(String feedId, String userId, String optionKey) async{
-    await _firestore
+Future<void> userhasDeletedVote(
+    String feedId, String userId, String optionKey) async {
+  await _firestore
       .collection("options")
       .document(feedId)
       .collection("voters")
       .document(userId)
       .delete();
 }
-Future<String> userHasVotedThisOption(String feedId, String userId)async{
 
+Future<String> userHasVotedThisOption(String feedId, String userId) async {
   String votedOption = "";
 
-       await _firestore .collection("options")
+  await _firestore
+      .collection("options")
       .document(feedId)
       .collection("voters")
       .document(userId)
       .get()
-      .then((snapshot){
-       
-        if (snapshot!= null){
-         
-            if (snapshot.data != null){
-                votedOption = snapshot.data[userId];
-            }else{
-              votedOption="";
-            }
-           
+      .then((snapshot) {
+    if (snapshot != null) {
+      if (snapshot.data != null) {
+        votedOption = snapshot.data[userId];
+      } else {
+        votedOption = "";
+      }
+    }
+  }).catchError((onError) {
+    print(onError);
+  });
 
-        }
-      }).catchError((onError){
-        print(onError);
-      });
-
-      return votedOption;
-  
+  return votedOption;
 }
 
 Future<void> incrementOptionVote(String feedId, String optionKey) async {
@@ -104,6 +121,7 @@ Future<void> incrementOptionVote(String feedId, String optionKey) async {
       .document(feedId)
       .updateData({optionKey: FieldValue.increment(1)});
 }
+
 Future<void> decrementoptionVote(String feedId, String optionKey) async {
   await _firestore
       .collection("options")
