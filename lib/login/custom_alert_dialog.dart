@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'custom_flat_button.dart';
+
 
 class CustomAlertDialog extends StatelessWidget {
   final String title;
@@ -46,18 +46,17 @@ class CustomAlertDialog extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
-                  child: CustomFlatButton(
-                    title: "OK",
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    textColor: Colors.black54,
+                  child: FlatButton(
+                    child: Text("Ok"),
+                    // fontWeight: FontWeight.w700,
+                    // textColor: Colors.black54,
                     onPressed: () {
                       onPressed();
                       Navigator.of(context).pop();
                     },
-                    splashColor: Colors.black12,
-                    borderColor: Colors.black12,
-                    borderWidth: 2,
+                    // splashColor: Colors.black12,
+                    // borderColor: Colors.black12,
+                    // borderWidth: 2,
                   ),
                 ),
               ],

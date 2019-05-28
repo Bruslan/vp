@@ -27,6 +27,7 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   Color currentColor;
+  bool error = false;
 
   @override
   void initState() {
@@ -38,31 +39,40 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 30),
-      child: TextField(
-        obscureText: widget.obscureText,
-        onChanged: (text) {
-          if (widget.onChanged != null) {
-            widget.onChanged(text);
-          }
-          setState(() {
-            if (!widget.validator(text) || text.length == 0) {
-              currentColor = widget.errorColor;
-            } else {
-              currentColor = widget.baseColor;
-            }
-          });
-        },
-        //keyboardType: widget.inputType,
-        controller: widget.controller,
-        decoration: InputDecoration(
-          hintStyle: TextStyle(
-            color: widget.baseColor,
-            fontFamily: "OpenSans",
-            fontWeight: FontWeight.w300,
+      child: Stack(
+        children: <Widget>[
+          TextField(
+            obscureText: widget.obscureText,
+            onChanged: (text) {
+              if (widget.onChanged != null) {
+                widget.onChanged(text);
+              }
+              setState(() {
+                if (!widget.validator(text) || text.length == 0) {
+                  currentColor = widget.errorColor;
+                  error = true;
+                } else {
+                  currentColor = widget.baseColor;
+                  error = false;
+                }
+              });
+            },
+            //keyboardType: widget.inputType,
+            controller: widget.controller,
+            decoration: InputDecoration(
+              hintStyle: TextStyle(
+                color: widget.baseColor,
+                fontFamily: "OpenSans",
+                fontWeight: FontWeight.w300,
+              ),
+              border: InputBorder.none,
+              hintText: widget.hint,
+            ),
           ),
-          border: InputBorder.none,
-          hintText: widget.hint,
-        ),
+
+          error ? Positioned(right:10, child: Text("!", style: TextStyle(color: Colors.red),),)
+          : SizedBox()
+        ],
       ),
     );
   }

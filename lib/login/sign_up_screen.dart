@@ -5,7 +5,6 @@ import 'custom_text_field.dart';
 import 'validator.dart';
 import 'package:flutter/services.dart';
 import 'package:vp/user_model.dart';
-import 'custom_flat_button.dart';
 import 'custom_alert_dialog.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -177,6 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Validator.validateEmail(email) &&
         Validator.validatePassword(password)) {
       try {
+        print("hallo");
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         _changeBlackVisible();
         await Auth().signUp(email, password).then((uID) {
@@ -193,6 +193,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           onPressed: _changeBlackVisible,
         );
       }
+    }else{
+      
     }
   }
 

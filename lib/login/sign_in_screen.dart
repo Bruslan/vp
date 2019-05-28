@@ -5,8 +5,7 @@ import 'package:vp/auth_class.dart';
 import 'validator.dart';
 import 'package:flutter/services.dart';
 import 'custom_alert_dialog.dart';
-import 'package:vp/user_model.dart';
-import 'custom_flat_button.dart';
+
 
 class SignInScreen extends StatefulWidget {
   _SignInScreenState createState() => _SignInScreenState();
@@ -104,6 +103,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           top: 10.0, bottom: 20.0, left: 15.0, right: 15.0),
                       child: _passwordField,
                     ),
+                    FlatButton(child: Text("Passwort vergesse?",  style: TextStyle(color: Colors.grey, fontSize: 10),), onPressed: () {},),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 14.0, horizontal: 15.0),
