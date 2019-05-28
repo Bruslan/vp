@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:vp/comment_model.dart';
+import 'package:vp/models/comment_model.dart';
 import 'package:vp/database_logic.dart';
 import 'package:vp/profile_page.dart';
-import 'package:vp/user_model.dart';
+import 'package:vp/models/user_model.dart';
 
 class CommentsPage extends StatefulWidget {
   final String feedId;

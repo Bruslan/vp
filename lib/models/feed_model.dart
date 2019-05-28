@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:vp/profile_page.dart';
-import 'package:vp/user_model.dart';
-import 'comment_page.dart';
-import 'database_logic.dart';
-import 'cupertione_actionsheet.dart';
-import 'options_model.dart';
+import 'package:vp/models/user_model.dart';
+import 'package:vp/comment_page.dart';
+import 'package:vp/database_logic.dart';
+import 'package:vp/cupertione_actionsheet.dart';
+import 'package:vp/options_model.dart';
 
 class FeedModel {
   final String userName;

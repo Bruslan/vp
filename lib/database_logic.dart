@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vp/chat_message_model.dart';
-import 'comment_model.dart';
-import 'feed_model.dart';
+import 'package:vp/models/chat_message_model.dart';
+import 'models/comment_model.dart';
+import 'models/feed_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
-import 'user_model.dart';
+import 'models/user_model.dart';
 
 final Firestore _firestore = Firestore.instance;
 

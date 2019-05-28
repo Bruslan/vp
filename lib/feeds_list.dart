@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'feed_model.dart';
+import 'models/feed_model.dart';
 import 'database_logic.dart';
 import 'filter_pins.dart';
 

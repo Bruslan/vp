@@ -4,14 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vp/auth_class.dart';
-import 'package:vp/chat_message_model.dart';
+import 'package:vp/models/chat_message_model.dart';
 import 'package:vp/database_logic.dart';
-import 'package:vp/user_model.dart';
+import 'package:vp/models/user_model.dart';
 import 'chat_bubble.dart';
 // final analytics = new FirebaseAnalytics();
 
 var currentUserEmail;
-var _scaffoldContext;
 
 class ChatPage extends StatefulWidget {
   final String targetUserID;
@@ -38,14 +37,13 @@ class ChatPageState extends State<ChatPage> {
     // TODO: implement initState
     super.initState();
     getConversationID();
-  
   }
 
   getConversationID() async {
     FirebaseUser currentFirebaseUser = await Auth().getCurrentUser();
 
     currentUserID = currentFirebaseUser.uid;
-    
+
     if (currentFirebaseUser.uid.hashCode <= widget.targetUserID.hashCode) {
       groupID = '${currentFirebaseUser.uid}-${widget.targetUserID}';
     } else {
@@ -57,8 +55,6 @@ class ChatPageState extends State<ChatPage> {
 
     setState(() {});
   }
-
-
 
   Widget _buildChatStream() {
     return StreamBuilder(
@@ -112,7 +108,6 @@ class ChatPageState extends State<ChatPage> {
                 child: SafeArea(child: _buildTextComposer()),
               ),
               new Builder(builder: (BuildContext context) {
-                _scaffoldContext = context;
                 return new Container(width: 0.0, height: 0.0);
               })
             ],
@@ -199,16 +194,12 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage({String messageText, String imageUrl}) async {
-    print("------");
-    print(receiverUserModel);
     ChatMessage chatMessage = new ChatMessage(
       ownerId: currentUserID,
       message: messageText,
       timestamp: DateTime.now().toString(),
     );
 
-    
-    print(currentUserModel);
     saveTextChat(chatMessage, groupID).then((onValue) {
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);

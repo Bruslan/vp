@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vp/chat_page.dart';
 import 'package:vp/database_logic.dart';
-import 'package:vp/user_model.dart';
+import 'package:vp/models/user_model.dart';
 import 'auth_class.dart';
 import "cupertione_actionsheet.dart";
 
@@ -23,10 +23,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   void changeProfilePicture(File imageFile) async {
     uploadImage(imageFile).then((downLoadUrl) {
-      updateProfilePicture(widget.targetUserId, downLoadUrl).then((_){
-        setState(() {
-          
-        });
+      updateProfilePicture(widget.targetUserId, downLoadUrl).then((_) {
+        setState(() {});
       });
     });
   }
@@ -34,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     _signOut() async {
-       Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop();
       try {
         await Auth().signOut();
         Navigator.of(context).pop();

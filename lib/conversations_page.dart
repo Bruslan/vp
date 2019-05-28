@@ -8,6 +8,20 @@ class ConversationPage extends StatelessWidget {
   final String currentUserID;
   const ConversationPage({Key key, this.currentUserID}) : super(key: key);
 
+  _buildConversationListTile(AsyncSnapshot snapshot, int index) {
+    return ListTile(
+      trailing: Icon(Icons.keyboard_arrow_right),
+      title: Text(snapshot.data.documents[index]["username"]),
+      subtitle: Text(snapshot.data.documents[index]["lastMessage"]),
+      leading: CircleAvatar(
+        backgroundColor: Colors.transparent,
+        backgroundImage: snapshot.data.documents[index]["avatarUrl"] != ""
+            ? new NetworkImage(snapshot.data.documents[index]["avatarUrl"])
+            : new ExactAssetImage("images/anonym.png"),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,22 +51,7 @@ class ConversationPage extends StatelessWidget {
                                       ["receiverID"]),
                             ));
                           },
-                          child: ListTile(
-                            trailing: Icon(Icons.keyboard_arrow_right),
-                            title: Text(
-                                snapshot.data.documents[index]["username"]),
-                            subtitle: Text(
-                                snapshot.data.documents[index]["lastMessage"]),
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              backgroundImage: snapshot.data.documents[index]
-                                          ["avatarUrl"] !=
-                                      ""
-                                  ? new NetworkImage(snapshot
-                                      .data.documents[index]["avatarUrl"])
-                                  : new ExactAssetImage("images/anonym.png"),
-                            ),
-                          ),
+                          child: _buildConversationListTile(snapshot, index),
                         ),
                         secondaryActions: <Widget>[
                           new IconSlideAction(

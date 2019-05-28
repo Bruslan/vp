@@ -5,7 +5,7 @@ import '../database_logic.dart';
 import 'custom_text_field.dart';
 import 'validator.dart';
 import 'package:flutter/services.dart';
-import 'package:vp/user_model.dart';
+import 'package:vp/models/user_model.dart';
 import 'custom_alert_dialog.dart';
 
 class SignUpScreen extends StatefulWidget {
