@@ -18,11 +18,9 @@ Future<bool> checkUserNameExists(String username) async {
       .where("userName", isEqualTo: username)
       .getDocuments()
       .then((onValue) {
-      print("es existiert ...");
-    print(onValue.documents.length);
     if (onValue.documents.length > 0) {
       exists = true;
-    }else{
+    } else {
       exists = false;
     }
   });
