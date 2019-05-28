@@ -171,11 +171,13 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     Map<String, dynamic> options = new Map();
     optionsControllers.forEach((f) {
       if (f.text != "") {
-        options[f.text]=0;
+        options[f.text] = 0;
       }
     });
 
     FeedModel feed = new FeedModel(
+        upVotes: 0,
+        downVotes: 0,
         hasOptions: options.length != 0,
         userName: currentUser.userName,
         userId: currentUserFirebase.uid,
@@ -186,8 +188,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         postId: reference.documentID);
 
     uploadFeed(feed, reference);
-    if (options.length != 0){
-      uploadOptionsForFeed(reference.documentID,options);
+    if (options.length != 0) {
+      uploadOptionsForFeed(reference.documentID, options);
     }
   }
 

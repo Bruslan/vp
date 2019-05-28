@@ -353,6 +353,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(widget.feedModel.upVotes);
   }
 
   getUser() async {

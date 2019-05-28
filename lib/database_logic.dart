@@ -79,10 +79,6 @@ Future<void> userhasVoted(
       .setData({userId: optionKey});
 }
 
-
-
-
-
 Future<void> userhasDeletedVote(
     String feedId, String userId, String optionKey) async {
   await _firestore
@@ -139,6 +135,39 @@ Future<int> userHasVotedThisFeed(String feedId, String userId) async {
   });
 
   return votedOption;
+}
+
+Future<void> userHasVotedFeed(String feedId, String userId, int voteKey) async {
+  await _firestore
+      .collection("votes")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .setData({userId: voteKey});
+}
+
+Future<void> deleteUserVoteForFeed(
+    String feedId, String userId) async {
+  await _firestore
+      .collection("votes")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .delete();
+}
+
+Future<void> incrementFeedVote(String feedId, String voteString) async {
+  await _firestore
+      .collection("feeds")
+      .document(feedId)
+      .updateData({voteString: FieldValue.increment(1)});
+}
+
+Future<void> decrementFeedVote(String feedId, String voteString) async {
+  await _firestore
+      .collection("feeds")
+      .document(feedId)
+      .updateData({voteString: FieldValue.increment(-1)});
 }
 
 Future<void> incrementOptionVote(String feedId, String optionKey) async {

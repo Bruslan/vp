@@ -17,6 +17,8 @@ class Votes extends StatefulWidget {
 
 class _VotesState extends State<Votes> {
   int hasVoted = 0;
+  int voteDifference;
+  bool waitTillFinish = false;
 
   _userHasVoted() async {
     int vote = await userHasVotedThisFeed(widget.feedId, widget.currentUserID);
@@ -25,11 +27,29 @@ class _VotesState extends State<Votes> {
     });
   }
 
+  _upVoteTheFeed() async {
+    incrementFeedVote(widget.feedId, "upVotes");
+    userHasVotedFeed(widget.feedId, widget.currentUserID, 1);
+  }
+
+  _downVote() async {
+    incrementFeedVote(widget.feedId, "downVotes");
+    userHasVotedFeed(widget.feedId, widget.currentUserID, -1);
+  }
+
+  _deleteCurrentVote(String voteString) async {
+    decrementFeedVote(widget.feedId, voteString);
+    deleteUserVoteForFeed(widget.feedId, widget.currentUserID);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _userHasVoted();
+    print(widget.upVotes);
+    print(widget.downVotes);
+    voteDifference = widget.upVotes - widget.downVotes;
   }
 
   @override
@@ -40,19 +60,40 @@ class _VotesState extends State<Votes> {
           IconButton(
             color: hasVoted == 1 ? Colors.green : Colors.grey,
             onPressed: () {
-              setState(() {
-                hasVoted = 1;
-              });
+              if (!waitTillFinish) {
+                setState(() {
+                  if (hasVoted == 1) {
+                    // entferne Vote
+                    voteDifference -= 1;
+                    hasVoted = 0;
+                    _deleteCurrentVote("upVotes");
+                  } else {
+                    hasVoted = 1;
+                    voteDifference += 1;
+                    _upVoteTheFeed();
+                  }
+                });
+              }
             },
             icon: Icon(Icons.keyboard_arrow_up),
           ),
-          Text("12"),
+          Text(voteDifference.toString()),
           IconButton(
             color: hasVoted == -1 ? Colors.red : Colors.grey,
             onPressed: () {
-              setState(() {
-                hasVoted = -1;
-              });
+              if (!waitTillFinish) {
+                setState(() {
+                  if (hasVoted == -1) {
+                    hasVoted = 0;
+                    voteDifference += 1;
+                    _deleteCurrentVote("downVotes");
+                  } else {
+                    hasVoted = -1;
+                    voteDifference -= 1;
+                    _downVote();
+                  }
+                });
+              }
             },
             icon: Icon(Icons.keyboard_arrow_down),
           )
