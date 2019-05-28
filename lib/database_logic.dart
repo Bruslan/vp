@@ -79,6 +79,10 @@ Future<void> userhasVoted(
       .setData({userId: optionKey});
 }
 
+
+
+
+
 Future<void> userhasDeletedVote(
     String feedId, String userId, String optionKey) async {
   await _firestore
@@ -104,6 +108,30 @@ Future<String> userHasVotedThisOption(String feedId, String userId) async {
         votedOption = snapshot.data[userId];
       } else {
         votedOption = "";
+      }
+    }
+  }).catchError((onError) {
+    print(onError);
+  });
+
+  return votedOption;
+}
+
+Future<int> userHasVotedThisFeed(String feedId, String userId) async {
+  int votedOption;
+
+  await _firestore
+      .collection("votes")
+      .document(feedId)
+      .collection("voters")
+      .document(userId)
+      .get()
+      .then((snapshot) {
+    if (snapshot != null) {
+      if (snapshot.data != null) {
+        votedOption = snapshot.data[userId];
+      } else {
+        votedOption = 0;
       }
     }
   }).catchError((onError) {

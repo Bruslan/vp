@@ -33,7 +33,6 @@ class ConversationPage extends StatelessWidget {
           stream: getConversationStream(currentUserID),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
-              print("new data");
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (BuildContext context, int index) {

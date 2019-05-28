@@ -11,7 +11,11 @@ import 'package:vp/database_logic.dart';
 import 'package:vp/cupertione_actionsheet.dart';
 import 'package:vp/options_model.dart';
 
+import '../voting_system.dart';
+
 class FeedModel {
+  final int upVotes;
+  final int downVotes;
   final String userName;
   final List<dynamic> imageUrls;
   final String textContent;
@@ -24,7 +28,9 @@ class FeedModel {
   final int commentCount;
 
   FeedModel(
-      {this.commentCount,
+      {this.upVotes,
+      this.downVotes,
+      this.commentCount,
       this.hasOptions,
       this.userName,
       this.textContent,
@@ -37,6 +43,8 @@ class FeedModel {
 
   factory FeedModel.fromJson(Map<String, dynamic> json) {
     return FeedModel(
+        upVotes: json["upVotes"],
+        downVotes: json["downVotes"],
         postId: json["postId"],
         commentCount: json["commentCount"],
         location: json["location"],
@@ -55,6 +63,8 @@ class FeedModel {
 
   Map<String, Object> toJson() {
     return {
+      "upVotes": upVotes,
+      "downVotes": downVotes,
       "commentCount": commentCount,
       'userName': userName,
       'imageUrls': imageUrls,
@@ -285,6 +295,7 @@ class _FeedFromModelState extends State<FeedFromModel> {
 
   Widget _buildActionButtons() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(10),
@@ -319,7 +330,13 @@ class _FeedFromModelState extends State<FeedFromModel> {
                     ],
                   ),
           ),
-        )
+        ),
+        Votes(
+          feedId: widget.feedModel.postId,
+          upVotes: widget.feedModel.upVotes,
+          downVotes: widget.feedModel.downVotes,
+          currentUserID: widget.currentUserID,
+        ),
       ],
     );
   }
