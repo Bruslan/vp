@@ -21,6 +21,7 @@ class _VotesState extends State<Votes> {
   int voteDifference;
   bool waitTillFinish = false;
   int currentVote = 0;
+  bool voteCompleted = false;
 
   _userHasVoted() async {
     int vote = await userHasVotedThisFeed(widget.feedId, widget.currentUserID);
@@ -52,8 +53,14 @@ class _VotesState extends State<Votes> {
   }
 
   _buildCount() {
+    return Text((voteDifference).toString());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     voteDifference = widget.upVotes - widget.downVotes;
-    return Text((voteDifference + currentVote).toString());
   }
 
   @override
@@ -65,41 +72,44 @@ class _VotesState extends State<Votes> {
           IconButton(
             color: hasVoted == 1 ? Colors.green : Colors.grey,
             onPressed: () {
-              switch (hasVoted) {
-                case -1:
-                  {
-                    setState(() {
-                      // hat zuvor upvote geklickt
-                      _deleteCurrentVoteAndIncrementOther(
-                          "downVotes", "upVotes", 1);
-                      hasVoted = 1;
-                      currentVote += 2;
-                    });
-                  }
-                  break;
-                case 0:
-                  {
-                    // hat noch keinen Vote gemacht
-                    setState(() {
-                      _upVoteTheFeed();
-                      hasVoted = 1;
-                      currentVote += 1;
-                    });
-                  }
-                  break;
-                case 1:
-                  {
-                    //  hat davor downGevotet
-                    setState(() {
-                      // hat zuvor upvote geklickt
-                      _deleteCurrentVote("upVotes");
-                      hasVoted = 0;
-                      currentVote -= 1;
-                    });
-                  }
+              if (!voteCompleted) {
+                voteCompleted = true;
+                switch (hasVoted) {
+                  case -1:
+                    {
+                      setState(() {
+                        // hat zuvor upvote geklickt
+                        _deleteCurrentVoteAndIncrementOther(
+                            "downVotes", "upVotes", 1);
+                        hasVoted = 1;
+                        voteDifference += 2;
+                      });
+                    }
+                    break;
+                  case 0:
+                    {
+                      // hat noch keinen Vote gemacht
+                      setState(() {
+                        _upVoteTheFeed();
+                        hasVoted = 1;
+                        voteDifference += 1;
+                      });
+                    }
+                    break;
+                  case 1:
+                    {
+                      //  hat davor downGevotet
+                      setState(() {
+                        // hat zuvor upvote geklickt
+                        _deleteCurrentVote("upVotes");
+                        hasVoted = 0;
+                        voteDifference -= 1;
+                      });
+                    }
 
-                  break;
-                default:
+                    break;
+                  default:
+                }
               }
             },
             icon: Icon(Icons.keyboard_arrow_up),
@@ -108,41 +118,44 @@ class _VotesState extends State<Votes> {
           IconButton(
             color: hasVoted == -1 ? Colors.red : Colors.grey,
             onPressed: () {
-              switch (hasVoted) {
-                case 1:
-                  {
-                    setState(() {
-                      // hat zuvor upvote geklickt
-                      _deleteCurrentVoteAndIncrementOther(
-                          "upVotes", "downVotes", -1);
-                      hasVoted = -1;
-                      currentVote -= 2;
-                    });
-                  }
-                  break;
-                case 0:
-                  {
-                    // hat noch keinen Vote gemacht
-                    setState(() {
-                      _downVote();
-                      hasVoted = -1;
-                      currentVote -= 1;
-                    });
-                  }
-                  break;
-                case -1:
-                  {
-                    //  hat davor downGevotet
-                    setState(() {
-                      // hat zuvor upvote geklickt
-                      _deleteCurrentVote("downVotes");
-                      hasVoted = 0;
-                      currentVote += 1;
-                    });
-                  }
+              if (!voteCompleted) {
+                voteCompleted = true;
+                switch (hasVoted) {
+                  case 1:
+                    {
+                      setState(() {
+                        // hat zuvor upvote geklickt
+                        _deleteCurrentVoteAndIncrementOther(
+                            "upVotes", "downVotes", -1);
+                        hasVoted = -1;
+                        voteDifference -= 2;
+                      });
+                    }
+                    break;
+                  case 0:
+                    {
+                      // hat noch keinen Vote gemacht
+                      setState(() {
+                        _downVote();
+                        hasVoted = -1;
+                        voteDifference -= 1;
+                      });
+                    }
+                    break;
+                  case -1:
+                    {
+                      //  hat davor downGevotet
+                      setState(() {
+                        // hat zuvor upvote geklickt
+                        _deleteCurrentVote("downVotes");
+                        hasVoted = 0;
+                        voteDifference += 1;
+                      });
+                    }
 
-                  break;
-                default:
+                    break;
+                  default:
+                }
               }
             },
             icon: Icon(Icons.keyboard_arrow_down),
