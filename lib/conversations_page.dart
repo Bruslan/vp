@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:vp/database_logic.dart';
-import 'chat_page.dart';
+import 'package:vp/chat_page.dart';
 
 class ConversationPage extends StatelessWidget {
   final String currentUserID;

@@ -4,19 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:vp/models/user_model.dart';
+import 'package:vp/refresh_notifier.dart';
 import 'dart:async';
 import 'dart:io';
-import 'models/feed_model.dart';
-import 'location.dart';
-import 'filter_pins.dart';
-import 'horizontal_image_view.dart';
-import 'database_logic.dart';
+import 'package:vp/models/feed_model.dart';
+import 'package:vp/location.dart';
+import 'package:vp/filter_pins.dart';
+import 'package:vp/horizontal_image_view.dart';
+import 'package:vp/database_logic.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'auth_class.dart';
+import 'package:vp/auth_class.dart';
 
 class CreateFeedModal extends StatefulWidget {
-  CreateFeedModal({Key key}) : super(key: key);
+  final BuildContext oldContext;
+  CreateFeedModal({Key key, this.oldContext}) : super(key: key);
 
   _CreateFeedModal createState() => new _CreateFeedModal();
 }
@@ -55,6 +58,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   }
 
   Widget build(BuildContext context) {
+    final refreshNotifier = Provider.of<RefreshNotifier>(context);
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
@@ -66,7 +70,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
             trailing: new FlatButton(
                 onPressed: () {
                   if (posting == false) {
-                    postImage();
+                    postImage(refreshNotifier);
                   }
                 },
                 child: new Text(
@@ -227,7 +231,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     Navigator.pop(context);
   }
 
-  void postImage() {
+  void postImage(RefreshNotifier refreshNotifier) {
     String tagFilter = "";
 
     tagsMap.forEach((f) {
@@ -260,6 +264,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
           imageFiles.clear();
           uploading = false;
         });
+        refreshNotifier.mustRefresh();
         Navigator.pop(context);
       }).catchError((onError) {
         print("Error beim upload von Image");
@@ -269,6 +274,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       if (descriptionController.text != "" && tagFilter != "") {
         posting = true;
         postToFireStore(null, tagFilter);
+        refreshNotifier.mustRefresh();
+
         Navigator.pop(context);
       }
     }

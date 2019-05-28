@@ -7,7 +7,7 @@ import 'package:vp/auth_class.dart';
 import 'package:vp/models/chat_message_model.dart';
 import 'package:vp/database_logic.dart';
 import 'package:vp/models/user_model.dart';
-import 'chat_bubble.dart';
+import 'package:vp/chat_bubble.dart';
 // final analytics = new FirebaseAnalytics();
 
 var currentUserEmail;

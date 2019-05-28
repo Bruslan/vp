@@ -6,7 +6,7 @@ class RefreshNotifier extends ChangeNotifier {
 
   set refresh(bool val) {
     _refresh = val;
-    print(val);
+ 
     notifyListeners();
   }
 

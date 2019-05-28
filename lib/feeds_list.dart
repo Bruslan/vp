@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'models/feed_model.dart';
-import 'database_logic.dart';
-import 'filter_pins.dart';
+import 'package:provider/provider.dart';
+import 'package:vp/refresh_notifier.dart';
+import 'package:vp/models/feed_model.dart';
+import 'package:vp/database_logic.dart';
+import 'package:vp/filter_pins.dart';
 
 class FeedsList extends StatefulWidget {
   final FirebaseUser currentUser;
@@ -13,6 +15,8 @@ class FeedsList extends StatefulWidget {
 }
 
 class _FeedsListState extends State<FeedsList> {
+  BuildContext _context;
+  bool mustRefresh = false;
   List<Map<String, dynamic>> tagsMap = [
     {
       "name": "Favos",
@@ -45,6 +49,12 @@ class _FeedsListState extends State<FeedsList> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
+    final refreshNotifier = Provider.of<RefreshNotifier>(context);
+    setState(() {
+      mustRefresh = refreshNotifier.refresh;
+    });
+
     return Column(
       children: <Widget>[
         TagPills(
