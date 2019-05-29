@@ -42,7 +42,9 @@ class _FeedsListState extends State<FeedsList> {
   _collectFeeds() async {
     List<FeedModel> feeds = (await getFeeds(10, "feeds", tagsMap));
     feedModelList = feeds;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -53,9 +55,12 @@ class _FeedsListState extends State<FeedsList> {
       children: <Widget>[
         TagPills(
           onTagsSet: (tags) {
-            setState(() {
-              tagsMap = tags;
-            });
+            if (mounted) {
+              setState(() {
+                tagsMap = tags;
+              });
+            }
+
             _collectFeeds();
           },
           tags: tagsMap,

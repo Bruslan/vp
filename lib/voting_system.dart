@@ -25,9 +25,11 @@ class _VotesState extends State<Votes> {
 
   _userHasVoted() async {
     int vote = await userHasVotedThisFeed(widget.feedId, widget.currentUserID);
-    setState(() {
-      hasVoted = vote;
-    });
+    if (mounted) {
+      setState(() {
+        hasVoted = vote;
+      });
+    }
   }
 
   _upVoteTheFeed() async {
@@ -77,34 +79,40 @@ class _VotesState extends State<Votes> {
                 switch (hasVoted) {
                   case -1:
                     {
-                      setState(() {
-                        // hat zuvor upvote geklickt
-                        _deleteCurrentVoteAndIncrementOther(
-                            "downVotes", "upVotes", 1);
-                        hasVoted = 1;
-                        voteDifference += 2;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          // hat zuvor upvote geklickt
+                          _deleteCurrentVoteAndIncrementOther(
+                              "downVotes", "upVotes", 1);
+                          hasVoted = 1;
+                          voteDifference += 2;
+                        });
+                      }
                     }
                     break;
                   case 0:
                     {
                       // hat noch keinen Vote gemacht
-                      setState(() {
-                        _upVoteTheFeed();
-                        hasVoted = 1;
-                        voteDifference += 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          _upVoteTheFeed();
+                          hasVoted = 1;
+                          voteDifference += 1;
+                        });
+                      }
                     }
                     break;
                   case 1:
                     {
                       //  hat davor downGevotet
-                      setState(() {
-                        // hat zuvor upvote geklickt
-                        _deleteCurrentVote("upVotes");
-                        hasVoted = 0;
-                        voteDifference -= 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          // hat zuvor upvote geklickt
+                          _deleteCurrentVote("upVotes");
+                          hasVoted = 0;
+                          voteDifference -= 1;
+                        });
+                      }
                     }
 
                     break;
@@ -123,34 +131,40 @@ class _VotesState extends State<Votes> {
                 switch (hasVoted) {
                   case 1:
                     {
-                      setState(() {
-                        // hat zuvor upvote geklickt
-                        _deleteCurrentVoteAndIncrementOther(
-                            "upVotes", "downVotes", -1);
-                        hasVoted = -1;
-                        voteDifference -= 2;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          // hat zuvor upvote geklickt
+                          _deleteCurrentVoteAndIncrementOther(
+                              "upVotes", "downVotes", -1);
+                          hasVoted = -1;
+                          voteDifference -= 2;
+                        });
+                      }
                     }
                     break;
                   case 0:
                     {
                       // hat noch keinen Vote gemacht
-                      setState(() {
-                        _downVote();
-                        hasVoted = -1;
-                        voteDifference -= 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          _downVote();
+                          hasVoted = -1;
+                          voteDifference -= 1;
+                        });
+                      }
                     }
                     break;
                   case -1:
                     {
                       //  hat davor downGevotet
-                      setState(() {
-                        // hat zuvor upvote geklickt
-                        _deleteCurrentVote("downVotes");
-                        hasVoted = 0;
-                        voteDifference += 1;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          // hat zuvor upvote geklickt
+                          _deleteCurrentVote("downVotes");
+                          hasVoted = 0;
+                          voteDifference += 1;
+                        });
+                      }
                     }
 
                     break;

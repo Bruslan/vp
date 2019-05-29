@@ -101,9 +101,12 @@ class _OptionsState extends State<Options> {
   void _handleRadioValueChange(
       int value, String votedOption, String currentVote) {
     _showOptionPercentage = true;
+    if(mounted){
     setState(() {
       _radioValue = value;
     });
+    }
+
 
 //     if (votedOption == currentVote) {
 //       // remove the vote
