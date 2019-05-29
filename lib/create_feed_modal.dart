@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:vp/models/user_model.dart';
 import 'dart:async';
 import 'dart:io';
@@ -14,6 +15,8 @@ import 'package:vp/horizontal_image_view.dart';
 import 'package:vp/database_logic.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:vp/auth_class.dart';
+
+import 'change_notifiers.dart';
 
 class CreateFeedModal extends StatefulWidget {
   final BuildContext oldContext;
@@ -56,7 +59,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   }
 
   Widget build(BuildContext context) {
-  
+    final refresher = Provider.of<FeedRefresh>(context);
+
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
@@ -68,7 +72,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
             trailing: new FlatButton(
                 onPressed: () {
                   if (posting == false) {
-                    postImage();
+                    postImage(refresher);
                   }
                 },
                 child: new Text(
@@ -229,7 +233,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     Navigator.pop(context);
   }
 
-  void postImage() {
+  void postImage(FeedRefresh refresher) {
     String tagFilter = "";
 
     tagsMap.forEach((f) {
@@ -251,19 +255,22 @@ class _CreateFeedModal extends State<CreateFeedModal> {
         uploading = true;
       });
       // compressImage();
-
+      refresher.mustRefresh();
+      Navigator.pop(context);
       uploadImages(imageFiles).then((List<String> imageURLs) {
         postToFireStore(imageURLs, tagFilter);
       }).catchError((onError) {
         print("ein Error beim Upload vom Feed");
         print(onError);
       }).then((_) {
-        setState(() {
-          imageFiles.clear();
-          uploading = false;
-        });
-       
-        Navigator.pop(context);
+        refresher.hasRefreshed();
+        if (mounted) {
+          setState(() {
+            imageFiles.clear();
+            uploading = false;
+            
+          });
+        }
       }).catchError((onError) {
         print("Error beim upload von Image");
         print(onError);
@@ -272,8 +279,8 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       if (descriptionController.text != "" && tagFilter != "") {
         posting = true;
         postToFireStore(null, tagFilter);
-        
 
+        refresher.mustRefresh();
         Navigator.pop(context);
       }
     }

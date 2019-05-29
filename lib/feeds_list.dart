@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vp/models/feed_model.dart';
 import 'package:vp/database_logic.dart';
 import 'package:vp/filter_pins.dart';
+
+import 'change_notifiers.dart';
 
 class FeedsList extends StatefulWidget {
   final FirebaseUser currentUser;
@@ -50,9 +53,10 @@ class _FeedsListState extends State<FeedsList> {
   @override
   Widget build(BuildContext context) {
     _context = context;
-
+    final refresher = Provider.of<FeedRefresh>(context);
     return Column(
       children: <Widget>[
+        refresher.refresh ? LinearProgressIndicator() : SizedBox(),
         TagPills(
           onTagsSet: (tags) {
             if (mounted) {
