@@ -4,9 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/model.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:vp/models/user_model.dart';
-import 'package:vp/refresh_notifier.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:vp/models/feed_model.dart';
@@ -58,7 +56,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
   }
 
   Widget build(BuildContext context) {
-    final refreshNotifier = Provider.of<RefreshNotifier>(context);
+  
     return Scaffold(
         resizeToAvoidBottomPadding: false,
         appBar: new CupertinoNavigationBar(
@@ -70,7 +68,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
             trailing: new FlatButton(
                 onPressed: () {
                   if (posting == false) {
-                    postImage(refreshNotifier);
+                    postImage();
                   }
                 },
                 child: new Text(
@@ -231,7 +229,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
     Navigator.pop(context);
   }
 
-  void postImage(RefreshNotifier refreshNotifier) {
+  void postImage() {
     String tagFilter = "";
 
     tagsMap.forEach((f) {
@@ -264,7 +262,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
           imageFiles.clear();
           uploading = false;
         });
-        refreshNotifier.mustRefresh();
+       
         Navigator.pop(context);
       }).catchError((onError) {
         print("Error beim upload von Image");
@@ -274,7 +272,7 @@ class _CreateFeedModal extends State<CreateFeedModal> {
       if (descriptionController.text != "" && tagFilter != "") {
         posting = true;
         postToFireStore(null, tagFilter);
-        refreshNotifier.mustRefresh();
+        
 
         Navigator.pop(context);
       }

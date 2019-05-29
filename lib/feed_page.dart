@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:vp/refresh_notifier.dart';
 import 'package:vp/create_feed_modal.dart';
 import 'package:vp/feeds_list.dart';
-import "package:provider/provider.dart";
+
 
 class FeedPage extends StatefulWidget {
   final FirebaseUser currentFirebaseUser;

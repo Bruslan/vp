@@ -26,7 +26,7 @@ class ConversationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: CupertinoNavigationBar(
-          middle: Text("create"),
+          middle: Text("Conversations"),
         ),
         body: Container(
             child: StreamBuilder(
