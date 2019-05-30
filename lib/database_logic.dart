@@ -249,6 +249,50 @@ Future<List<FeedModel>> getFeeds(int feedCount, String collection,
   return feeds;
 }
 
+
+Future<List<FeedModel>> loadMoreFeeds(FeedModel lastFeed, int feedCount, String collection,
+  List<Map<String, dynamic>> tagNames) async {
+  List<FeedModel> feeds = new List();
+  String tagFilter = "";
+
+  tagNames.forEach((f) {
+    if (f["value"] == true) {
+      tagFilter = f["name"];
+      return;
+    }
+  });
+
+  if (tagFilter == "") {
+    await _firestore
+        .collection(collection)
+        .orderBy('timestamp', descending: true)
+        .startAfter([lastFeed.timestamp])
+        .limit(feedCount)
+        // .startAt([startAtDocument])
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((document) {
+        feeds.add(FeedModel.fromDocument(document));
+      });
+    });
+  } else {
+    await _firestore
+        .collection(collection)
+        .orderBy('timestamp', descending: true)
+        .startAfter([lastFeed.timestamp])
+        .where("tag", isEqualTo: tagFilter)
+        .limit(feedCount)
+        // .startAt([startAtDocument])
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((document) {
+        feeds.add(FeedModel.fromDocument(document));
+      });
+    });
+  }
+  return feeds;
+}
+
 Future<List<CommentModel>> getCommentsForFeed(String feedId) async {
   List<CommentModel> comments = new List();
   await _firestore

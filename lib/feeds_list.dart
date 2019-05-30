@@ -17,7 +17,9 @@ class FeedsList extends StatefulWidget {
 
 class _FeedsListState extends State<FeedsList> {
   BuildContext _context;
+  final int getThatMuchFeeds = 10;
   bool mustRefresh = false;
+  bool mustLoadMore = false;
   List<Map<String, dynamic>> tagsMap = [
     {
       "name": "Favos",
@@ -35,19 +37,41 @@ class _FeedsListState extends State<FeedsList> {
 
   List<FeedModel> feedModelList = new List();
 
+  ScrollController controller;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    controller = new ScrollController()..addListener(_scrollListener);
+
     _collectFeeds();
   }
 
   _collectFeeds() async {
-    List<FeedModel> feeds = (await getFeeds(10, "feeds", tagsMap));
+    List<FeedModel> feeds =
+        (await getFeeds(getThatMuchFeeds, "feeds", tagsMap));
     feedModelList = feeds;
+    print(feedModelList.length);
     if (mounted) {
       setState(() {});
     }
+  }
+
+  _loadMore() async {
+    List<FeedModel> newFeeds = (await loadMoreFeeds(
+        feedModelList[feedModelList.length - 1],
+        getThatMuchFeeds,
+        "feeds",
+        tagsMap));
+    print(newFeeds.length);
+    feedModelList.addAll(newFeeds);
+    print(feedModelList.length);
+    if (!(newFeeds.length < getThatMuchFeeds)){
+ mustLoadMore = false;
+    }
+   
+    setState(() {});
   }
 
   @override
@@ -72,6 +96,7 @@ class _FeedsListState extends State<FeedsList> {
         Expanded(
           child: RefreshIndicator(
               child: ListView.builder(
+                controller: controller,
                 itemCount: feedModelList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return FeedFromModel(
@@ -84,6 +109,21 @@ class _FeedsListState extends State<FeedsList> {
         ),
       ],
     );
+  }
+
+  void _scrollListener() {
+    if (controller.position.extentAfter < 400) {
+      if (!mustLoadMore) {
+        print("have to load more");
+        _loadMore();
+
+        if (mounted) {
+          setState(() {
+            mustLoadMore = true;
+          });
+        }
+      }
+    }
   }
 
   Future<void> _refresh() async {
